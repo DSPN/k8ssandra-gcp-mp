@@ -1,0 +1,28 @@
+apiVersion: app.k8s.io/v1beta1
+
+kind: Application
+
+metadata:
+  name: "{{ .Release.Name }}"
+  namespace: "{{ .Release.Namespace }}"
+  labels:
+    app.kubernetes.io/name: "{{ .Release.Name }}"
+  annotations:
+    marketplace.cloud.google.com/deploy-info: '{"partner_id": "partner", "product_id": "k8ssandra-mp", "partner_name": "DataStax"}'
+
+spec:
+  descriptor:
+    type: K8ssandra-mp
+    version: "1.0.0"
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: "{{ .Release.Name }}"
+  addOwnerRef: true
+  componentKinds:
+    - group: 'v1'
+      kind: PersistentVolumeClaim
+    - group: 'v1'
+      kind: Service
+    - group: 'apps/v1'
+      kind: StatefulSet
+

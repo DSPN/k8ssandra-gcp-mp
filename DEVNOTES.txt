@@ -1,0 +1,31 @@
+=== Deployer ===
+
+Here's what I'm doing currently to build and install the deployer during development.
+
+Create a minimally suitable dev cluster on gke:
+gcloud container clusters create --machine-type e2-standard-2 mallen-1
+
+Install the application crd so cluster will understand the Application resource type:
+kubectl apply -f "https://raw.githubusercontent.com/GoogleCloudPlatform/marketplace-k8s-app-tools/master/crd/app-crd.yaml"
+
+export REGISTRY=gcr.io/gke-launcher-dev
+export APP_NAME=k8ssandra-mp
+
+docker build --tag $REGISTRY/$APP_NAME/deployer .
+docker push $REGISTRY/$APP_NAME/deployer
+
+create new namespace to run in:
+kubectl create namespace mallen
+
+mpdev install --deployer=$REGISTRY/$APP_NAME/deployer --parameters='{"name": "k8ssandra-mp-1", "namespace": "mallen"}'
+
+The above step fails due to what appears to be a (helm.sh/hook) bug in deployer base image.
+see the logs with kubectl logs <pod_name> -n mallen.  NOTE: I worked around this
+issue by using a modified `create_manifests.sh` file (see Dockerfile)
+
+Next issue is that I'm getting a permission denied error:
+
+Error from server (Forbidden): error when retrieving current configuration of.
+
+This one should hopefully be easier to resolve, as it seems like it has
+something to do with the service account.
