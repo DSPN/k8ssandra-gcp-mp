@@ -23,5 +23,5 @@ docker push $REGISTRY/$APP_NAME/deployer
 create new namespace to run in:
 kubectl create namespace mallen
 
-mpdev install --deployer=$REGISTRY/$APP_NAME/deployer --parameters='{"name": "k8ssandra-mp-1", "namespace": "mallen"}'
+mpdev install --deployer=$REGISTRY/$APP_NAME/deployer --parameters='{"name": "k8ssandra-mp", "namespace": "mallen"}'
 
