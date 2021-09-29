@@ -1,0 +1,31 @@
+k8ssandra:
+  cassandra:
+    version: "3.11.10"
+    cassandraLibDirVolume:
+      storageClass: k8ssandra-storage
+      size: 1Gi
+    allowMultipleNodesPerWorker: true
+    heap:
+      size: 1G
+      newGenSize: 1G
+    resources:
+      requests:
+        cpu: 1000m
+        memory: 2Gi
+      limits:
+        cpu: 1000m
+        memory: 2Gi
+    datacenters:
+      - name: dc1
+        size: 3
+        racks:
+          - name: default
+  reaper:
+    enabled: true
+  reaper-operator:
+    enabled: true
+  stargate:
+    enabled: true
+  kube-prometheus-stack:
+    enabled: true
+
