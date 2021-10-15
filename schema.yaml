@@ -37,6 +37,114 @@ properties:
     x-google-marketplace:
       type: NAMESPACE
 
+  grafanaServiceAccount:
+    type: string
+    x-google-marketplace:
+      type: SERVICE_ACCOUNT
+      serviceAccount:
+        description: >
+          service account used for the grafana component of k8ssandra
+        roles:
+          - type: Role
+            rulesType: CUSTOM
+            rules:
+              - apiGroups: ['extensions', '']
+                resources: ['podsecuritypolicies', 'secrets', 'configmaps']
+                verbs: ['use', 'get', 'list', 'watch']
+
+  kube-promethe-admissionServiceAccount:
+    type: string
+    x-google-marketplace:
+      type: SERVICE_ACCOUNT
+      serviceAccount:
+        description: >
+          service account used for kube-promethe-admission component of k8ssandra
+        roles:
+          - type: Role
+            rulesType: CUSTOM
+            rules:
+              - apiGroups: ['']
+                resources: ['secrets']
+                verbs: ['get', 'create']
+          - type: ClusterRole
+            rulesType: CUSTOM
+            rules:
+              - apiGroups: ['admissionregistration.k8s.io']
+                resources: ['validatingwebhookconfigurations','mutatingwebhookconfigurations']
+                verbs: ['get','update']
+              - apiGroups: ['policy']
+                resources: ['podsecuritypolicies']
+                verbs: ['use']
+
+  cass-operatorServiceAccount:
+    type: string
+    x-google-marketplace:
+      type: SERVICE_ACCOUNT
+      serviceAccount:
+        description: >
+          service account used for the cass-operator component of k8ssandra
+        roles:
+          - type: Role
+            rulesType: CUSTOM
+            rules:
+              - apiGroups: ['']
+                resources: ['pods','services','endpoints','persistentvolumeclaims','events','configmaps','secrets']
+                verbs: ['*']
+              - apiGroups: ['']
+                resources: ['namespaces']
+                verbs: ['get']
+              - apiGroups: ['apps']
+                resources: ['deployments','daemonsets','replicasets','statefulsets']
+                verbs: ['*']
+              - apiGroups: ['monitoring.coreos.com']
+                resources: ['servicemonitors']
+                verbs: ['get', 'create']
+              - apiGroups: ['apps']
+                resources: ['deployments/finalizers']
+                verbs: ['update']
+              - apiGroups: ['datastax.com']
+                resources: ['*']
+                verbs: ['*']
+              - apiGroups: ['policy']
+                resources: ['poddisruptionbudgets']
+                verbs: ['*']
+              - apiGroups: ['cassandra.datastax.com']
+                resources: ['*']
+                verbs: ['*']
+              - apiGroups: ['batch']
+                resources: ['*']
+                verbs: ['*']
+          - type: ClusterRole
+            rulesType: CUSTOM
+            rules:
+              - apiGroups: ['']
+                resources: ['nodes','persistentvolumes']
+                verbs: ['get','watch','list']
+
+  k8ssandra.cassandra.clusterName:
+    type: string
+    default: "k8ssandra-mp"
+    description: name of the Cassandra cluster
+
+  k8ssandra.cassandra.cassandraLibDirVolume.size:
+    type: string
+    default: "10Gi"
+    description: size of the storage volume for Cassandra
+
+  # It looks like this syntax is not currently supported, so may need
+  # some custom parsing magic in the deployer image.
+  #k8ssandra.cassandra.datacenters[0].size:
+  #  type: integer
+  #  default: 4
+  #  description: size of the datacenter
+
+    #k8ssandra.cassandra.datacenters[0].name:
+    #type: string
+    #x-google-marketplace:
+    #  type: STRING
+    #default: dc1
+    #description: name of the datacenter
+
 required:
   - name
   - namespace

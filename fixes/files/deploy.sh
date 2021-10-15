@@ -61,6 +61,199 @@ app_api_version=$(kubectl get "applications.app.k8s.io/$NAME" \
 
 create_manifests.sh
 
+KUBE_PROMETHE_ADMISSIONSERVICEACCOUNT_SECRET_NAME=$(kubectl get secrets \
+  --namespace="$NAMESPACE" \
+  | grep kube-promethe-admissionserviceaccount-token | awk -F' ' '{print $1}' | tr -d '\n')
+
+cat > /data/manifest-expanded/kustomization.yaml <<EOF
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+commonLabels:
+  app.kubernetes.io/name: $NAME
+  excluded-resource: "no"
+
+patches:
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/serviceAccountName
+        value: "$NAME-grafanaserviceaccount"
+    target:
+      kind: Deployment
+      name: "$NAME-grafana"
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/serviceAccountName
+        value: "$NAME-cass-operatorserviceaccount"
+    target:
+      kind: Deployment
+      name: "$NAME-cass-operator"
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/volumes/0/secret/secretName
+        value: "$KUBE_PROMETHE_ADMISSIONSERVICEACCOUNT_SECRET_NAME"
+    target:
+      kind: Deployment
+      name: "$NAME-kube-promethe-operator"
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/serviceAccountName
+        value: "$NAME-kube-promethe-admissionserviceaccount"
+    target:
+      kind: Job
+      name: "$NAME-kube-promethe-admission-patch"
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/args/3
+        value: "--secret-name=$KUBE_PROMETHE_ADMISSIONSERVICEACCOUNT_SECRET_NAME"
+    target:
+      kind: Job
+      name: "$NAME-kube-promethe-admission-patch"
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/containers/0/args/3
+        value: "--secret-name=$KUBE_PROMETHE_ADMISSIONSERVICEACCOUNT_SECRET_NAME"
+    target:
+      kind: Job
+      name: "$NAME-kube-promethe-admission-create"
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/serviceAccountName
+        value: "$NAME-kube-promethe-admissionserviceaccount"
+    target:
+      kind: Job
+      name: "$NAME-kube-promethe-admission-create"
+ 
+resources:
+  - chart.yaml
+EOF
+kustomize build /data/manifest-expanded > /data/manifest-expanded/chart-kustomized.yaml
+
+cat > /data/manifest-expanded/kustomization.yaml <<EOF
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+patches:
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ServiceAccount
+      name: $NAME-grafana
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: Role
+      name: $NAME-grafana
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: RoleBinding
+      name: $NAME-grafana
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRole
+      name: $NAME-grafana-clusterrole
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRoleBinding
+      name: $NAME-grafana-clusterrolebinding
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      name: $NAME-grafana-test
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ServiceAccount
+      name: $NAME-cass-operator
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: Role
+      name: $NAME-cass-operator
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: RoleBinding
+      name: $NAME-cass-operator
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRole
+      name: $NAME-cass-operator-cr
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRoleBinding
+      name: $NAME-cass-operator-cr
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ServiceAccount
+      name: $NAME-kube-promethe-admission
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: Role
+      name: $NAME-kube-promethe-admission
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: RoleBinding
+      name: $NAME-kube-promethe-admission
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRole
+      name: $NAME-kube-promethe-admission
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRoleBinding
+      name: $NAME-kube-promethe-admission
+
+resources:
+  - chart-kustomized.yaml
+EOF
+kustomize build /data/manifest-expanded > /data/manifest-expanded/chart-kustomized2.yaml
+
+mv /data/manifest-expanded/chart-kustomized2.yaml /data/manifest-expanded/chart.yaml
+rm /data/manifest-expanded/kustomization.yaml
+rm /data/manifest-expanded/chart-kustomized.yaml
+
 # Assign owner references for the resources.
 /bin/set_ownership.py \
   --app_name "$NAME" \
@@ -69,7 +262,10 @@ create_manifests.sh
   --manifests "/data/manifest-expanded" \
   --dest "/data/resources.yaml"
 
+cat /data/resources.yaml
+
 validate_app_resource.py --manifests "/data/resources.yaml"
+
 
 # Ensure assembly phase is "Pending", until successful kubectl apply.
 /bin/setassemblyphase.py \
@@ -77,14 +273,14 @@ validate_app_resource.py --manifests "/data/resources.yaml"
   --status "Pending"
 
 # Apply the manifest.
-kubectl apply --namespace="$NAMESPACE" --filename="/data/resources.yaml" || true
+kubectl apply --namespace="$NAMESPACE" --filename="/data/resources.yaml" -l excluded-resource=no || true
 
 # wait for CRDS to be created.
 # TODO: use something like kubectl wait --for condition=established --timeout=120s instead of hard coding a timeout here.
 sleep 60
 
 # Apply a second time due to: https://github.com/kubernetes/kubectl/issues/1117
-kubectl apply --namespace="$NAMESPACE" --filename="/data/resources.yaml"
+kubectl apply --namespace="$NAMESPACE" --filename="/data/resources.yaml" -l excluded-resource=no
 
 patch_assembly_phase.sh --status="Success"
 
