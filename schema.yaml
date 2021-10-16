@@ -52,30 +52,6 @@ properties:
                 resources: ['podsecuritypolicies', 'secrets', 'configmaps']
                 verbs: ['use', 'get', 'list', 'watch']
 
-  kube-promethe-admissionServiceAccount:
-    type: string
-    x-google-marketplace:
-      type: SERVICE_ACCOUNT
-      serviceAccount:
-        description: >
-          service account used for kube-promethe-admission component of k8ssandra
-        roles:
-          - type: Role
-            rulesType: CUSTOM
-            rules:
-              - apiGroups: ['']
-                resources: ['secrets']
-                verbs: ['get', 'create']
-          - type: ClusterRole
-            rulesType: CUSTOM
-            rules:
-              - apiGroups: ['admissionregistration.k8s.io']
-                resources: ['validatingwebhookconfigurations','mutatingwebhookconfigurations']
-                verbs: ['get','update']
-              - apiGroups: ['policy']
-                resources: ['podsecuritypolicies']
-                verbs: ['use']
-
   cass-operatorServiceAccount:
     type: string
     x-google-marketplace:
@@ -120,6 +96,90 @@ properties:
               - apiGroups: ['']
                 resources: ['nodes','persistentvolumes']
                 verbs: ['get','watch','list']
+
+  kube-promethe-admissionServiceAccount:
+    type: string
+    x-google-marketplace:
+      type: SERVICE_ACCOUNT
+      serviceAccount:
+        description: >
+          service account used for kube-promethe-admission component of k8ssandra
+        roles:
+          - type: Role
+            rulesType: CUSTOM
+            rules:
+              - apiGroups: ['']
+                resources: ['secrets']
+                verbs: ['get', 'create']
+          - type: ClusterRole
+            rulesType: CUSTOM
+            rules:
+              - apiGroups: ['admissionregistration.k8s.io']
+                resources: ['validatingwebhookconfigurations','mutatingwebhookconfigurations']
+                verbs: ['get','update']
+              - apiGroups: ['policy']
+                resources: ['podsecuritypolicies']
+                verbs: ['use']
+
+  kube-promethe-operatorServiceAccount:
+    type: string
+    x-google-marketplace:
+      type: SERVICE_ACCOUNT
+      serviceAccount:
+        description: >
+          service account used for the kube-promethe-operator component of k8ssandra
+        roles:
+          - type: ClusterRole
+            rulesType: CUSTOM
+            rules:
+              - apiGroups: ['monitoring.coreos.com']
+                resources: ['alertmanagers','alertmanagers/finalizers','alertmanagerconfigs','prometheuses','prometheuses/finalizers','thanosrulers','thanosrulers/finalizers','servicemonitors','podmonitors','probes','prometheusrules']
+                verbs: ['*']
+              - apiGroups: ['apps']
+                resources: ['statefulsets']
+                verbs: ['*']
+              - apiGroups: ['']
+                resources: ['configmaps','secrets']
+                verbs: ['*']
+              - apiGroups: ['']
+                resources: ['pods']
+                verbs: ['list', 'delete']
+              - apiGroups: ['']
+                resources: ['services','services/finalizers','endpoints']
+                verbs: ['get','create','update','delete']
+              - apiGroups: ['']
+                resources: ['nodes']
+                verbs: ['list','watch']
+              - apiGroups: ['']
+                resources: ['namespaces']
+                verbs: ['get','list','watch']
+              - apiGroups: ['networking.k8s.io']
+                resources: ['ingress']
+                verbs: ['get','list','watch']
+              - apiGroups: ['policy']
+                resources: ['podsecuritypolicies']
+                verbs: ['use']
+
+  kube-promethe-prometheusServiceAccount:
+    type: string
+    x-google-marketplace:
+      type: SERVICE_ACCOUNT
+      serviceAccount:
+        description: >
+          service account used for the kube-promethe-prometheus component of k8ssandra
+        roles:
+          - type: ClusterRole
+            rulesType: CUSTOM
+            rules:
+              - apiGroups: ['']
+                resources: ['nodes','nodes/metrics','services','endpoints','pods']
+                verbs: ['get','list','watch']
+              - apiGroups: ['networking.k8s.io']
+                resources: ['ingress']
+                verbs: ['get','watch','list']
+              - apiGroups: ['policy']
+                resources: ['podsecuritypolicies']
+                verbs: ['use']
 
   k8ssandra.cassandra.clusterName:
     type: string

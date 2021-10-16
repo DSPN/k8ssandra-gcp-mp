@@ -61,10 +61,6 @@ app_api_version=$(kubectl get "applications.app.k8s.io/$NAME" \
 
 create_manifests.sh
 
-KUBE_PROMETHE_ADMISSIONSERVICEACCOUNT_SECRET_NAME=$(kubectl get secrets \
-  --namespace="$NAMESPACE" \
-  | grep kube-promethe-admissionserviceaccount-token | awk -F' ' '{print $1}' | tr -d '\n')
-
 cat > /data/manifest-expanded/kustomization.yaml <<EOF
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
@@ -89,39 +85,32 @@ patches:
       name: "$NAME-cass-operator"
   - patch: |-
       - op: replace
-        path: /spec/template/spec/volumes/0/secret/secretName
-        value: "$KUBE_PROMETHE_ADMISSIONSERVICEACCOUNT_SECRET_NAME"
+        path: /spec/template/spec/serviceAccountName
+        value: "$NAME-kube-promethe-admissionserviceaccount"
+    target:
+      kind: Job
+      name: "$NAME-kube-promethe-admission-create"
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/serviceAccountName
+        value: "$NAME-kube-promethe-admissionserviceaccount"
+    target:
+      kind: Job
+      name: "$NAME-kube-promethe-admission-patch"
+  - patch: |-
+      - op: replace
+        path: /spec/template/spec/serviceAccountName
+        value: "$NAME-kube-promethe-operatorserviceaccount"
     target:
       kind: Deployment
       name: "$NAME-kube-promethe-operator"
   - patch: |-
       - op: replace
-        path: /spec/template/spec/serviceAccountName
-        value: "$NAME-kube-promethe-admissionserviceaccount"
+        path: /spec/serviceAccountName
+        value: "$NAME-kube-promethe-prometheusserviceaccount"
     target:
-      kind: Job
-      name: "$NAME-kube-promethe-admission-patch"
-  - patch: |-
-      - op: replace
-        path: /spec/template/spec/containers/0/args/3
-        value: "--secret-name=$KUBE_PROMETHE_ADMISSIONSERVICEACCOUNT_SECRET_NAME"
-    target:
-      kind: Job
-      name: "$NAME-kube-promethe-admission-patch"
-  - patch: |-
-      - op: replace
-        path: /spec/template/spec/containers/0/args/3
-        value: "--secret-name=$KUBE_PROMETHE_ADMISSIONSERVICEACCOUNT_SECRET_NAME"
-    target:
-      kind: Job
-      name: "$NAME-kube-promethe-admission-create"
-  - patch: |-
-      - op: replace
-        path: /spec/template/spec/serviceAccountName
-        value: "$NAME-kube-promethe-admissionserviceaccount"
-    target:
-      kind: Job
-      name: "$NAME-kube-promethe-admission-create"
+      kind: Prometheus
+      name: "$NAME-kube-promethe-prometheus"
  
 resources:
   - chart.yaml
@@ -244,6 +233,100 @@ patches:
     target:
       kind: ClusterRoleBinding
       name: $NAME-kube-promethe-admission
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ServiceAccount
+      name: $NAME-kube-promethe-operator
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRole
+      name: $NAME-kube-promethe-operator
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRoleBinding
+      name: $NAME-kube-promethe-operator
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRole
+      name: $NAME-kube-promethe-operator-psp
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRoleBinding
+      name: $NAME-kube-promethe-operator-psp
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ServiceAccount
+      name: $NAME-kube-promethe-prometheus
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRole
+      name: $NAME-kube-promethe-prometheus
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRoleBinding
+      name: $NAME-kube-promethe-prometheus
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRole
+      name: $NAME-kube-promethe-prometheus-psp
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRoleBinding
+      name: $NAME-kube-promethe-prometheus-psp
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      name: $NAME-cleaner-k8ssandra
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      name: $NAME-cleaner-job-k8ssandra
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      name: $NAME-crd-upgrader-k8ssandra
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      name: $NAME-crd-upgrader-job-k8ssandra
 
 resources:
   - chart-kustomized.yaml
