@@ -12,128 +12,131 @@ x-google-marketplace:
       - Feature
     recommended: true
   
-  images:
-    grafana:
-      properties:
-        k8ssandra.kube-prometheus-stack.grafana.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.kube-prometheus-stack.grafana.image.tag:
-          type: TAG
-        k8ssandra.kube-prometheus-stack.grafana.initChownData.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.kube-prometheus-stack.grafana.initChownData.image.tag:
-          type: TAG
-        k8ssandra.kube-prometheus-stack.grafana.sidecar.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.kube-prometheus-stack.grafana.sidecar.image.tag:
-          type: TAG
-        k8ssandra.kube-prometheus-stack.grafana.imageRenderer.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.kube-prometheus-stack.grafana.imageRenderer.image.tag:
-          type: TAG
-    kube-state-metrics:
-      properties:
-        k8ssandra.kube-prometheus-stack.kube-state-metrics.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.kube-prometheus-stack.kube-state-metrics.image.tag:
-          type: TAG
-    prometheus-node-exporter:
-        k8ssandra.kube-prometheus-stack.prometheus-node-exporter.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.kube-prometheus-stack.prometheus-node-exporter.image.tag:
-          type: TAG
-    kube-prometheus-stack:
-      properties:
-        k8ssandra.kube-prometheus-stack.alertmanager.alertmanagerSpec.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.kube-prometheus-stack.alertmanager.alertmanagerSpec.image.tag:
-          type: TAG
-        k8ssandra.kube-prometheus-stack.prometheusOperator.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.kube-prometheus-stack.prometheusOperator.image.tag:
-          type: TAG
-        k8ssandra.kube-prometheus-stack.prometheusOperator.admissionWebhooks.patch.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.kube-prometheus-stack.prometheusOperator.admissionWebhooks.patch.image.tag:
-          type: TAG
-        k8ssandra.kube-prometheus-stack.prometheusOperator.prometheusSpec.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.kube-prometheus-stack.prometheusOperator.prometheusSpec.image.tag:
-          type: TAG
-    reaper-operator:
-      properties:
-        k8ssandra.reaper-operator.image.registry:
-          type: REGISTRY
-        k8ssandra.reaper-operator.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.reaper-operator.image.tag:
-          type: TAG
-    medusa-operator:
-      properties:
-        k8ssandra.medusa-operator.image.registry:
-          type: REGISTRY
-        k8ssandra.medusa-operator.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.medusa-operator.image.tag:
-          type: TAG
-    cass-operator:
-      properties:
-        k8ssandra.cass-operator.image.registry:
-          type: REGISTRY
-        k8ssandra.cass-operator.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.cass-operator.image.tag:
-          type: TAG
-    k8ssandra:
-      properties:
-        k8ssandra.cassandra.configBuilder.image.registry:
-          type: REGISTRY
-        k8ssandra.cassandra.configBuilder.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.cassandra.configBuilder.image.tag:
-          type: TAG
-        k8ssandra.cassandra.jmxCredentialsConfig.image.registry:
-          type: REGISTRY
-        k8ssandra.cassandra.jmxCredentialsConfig.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.cassandra.jmxCredentialsConfig.image.tag:
-          type: TAG
-        k8ssandra.cassandra.loggingSidecar.image.registry:
-          type: REGISTRY
-        k8ssandra.cassandra.loggingSidecar.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.cassandra.loggingSidecar.image.tag:
-          type: TAG
-        k8ssandra.stargate.waitForCassandra.image.registry:
-          type: REGISTRY
-        k8ssandra.stargate.waitForCassandra.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.stargate.waitForCassandra.image.tag:
-          type: TAG
-        k8ssandra.reaper.image.registry:
-          type: REGISTRY
-        k8ssandra.reaper.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.reaper.image.tag:
-          type: TAG
-        k8ssandra.medusa.image.registry:
-          type: REGISTRY
-        k8ssandra.medusa.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.medusa.image.tag:
-          type: TAG
-        k8ssandra.cleaner.image.registry:
-          type: REGISTRY
-        k8ssandra.cleaner.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.cleaner.image.tag:
-          type: TAG
-        k8ssandra.client.image.registry:
-          type: REGISTRY
-        k8ssandra.client.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.client.image.tag:
-          type: TAG
+  images: {}
+
+# Temporarily commenting out during development.
+#  images:
+#    grafana:
+#      properties:
+#        k8ssandra.kube-prometheus-stack.grafana.image.repository:
+#          type: REPO_WITHOUT_REGISTRY
+#        k8ssandra.kube-prometheus-stack.grafana.image.tag:
+#          type: TAG
+#        k8ssandra.kube-prometheus-stack.grafana.initChownData.image.repository:
+#          type: REPO_WITHOUT_REGISTRY
+#        k8ssandra.kube-prometheus-stack.grafana.initChownData.image.tag:
+#          type: TAG
+#        k8ssandra.kube-prometheus-stack.grafana.sidecar.image.repository:
+#          type: REPO_WITHOUT_REGISTRY
+#        k8ssandra.kube-prometheus-stack.grafana.sidecar.image.tag:
+#          type: TAG
+#        k8ssandra.kube-prometheus-stack.grafana.imageRenderer.image.repository:
+#          type: REPO_WITHOUT_REGISTRY
+#        k8ssandra.kube-prometheus-stack.grafana.imageRenderer.image.tag:
+#          type: TAG
+#    kube-state-metrics:
+#      properties:
+#        k8ssandra.kube-prometheus-stack.kube-state-metrics.image.repository:
+#          type: REPO_WITHOUT_REGISTRY
+#        k8ssandra.kube-prometheus-stack.kube-state-metrics.image.tag:
+#          type: TAG
+#    prometheus-node-exporter:
+#        k8ssandra.kube-prometheus-stack.prometheus-node-exporter.image.repository:
+#          type: REPO_WITHOUT_REGISTRY
+#        k8ssandra.kube-prometheus-stack.prometheus-node-exporter.image.tag:
+#          type: TAG
+#    kube-prometheus-stack:
+#      properties:
+#        k8ssandra.kube-prometheus-stack.alertmanager.alertmanagerSpec.image.repository:
+#          type: REPO_WITHOUT_REGISTRY
+#        k8ssandra.kube-prometheus-stack.alertmanager.alertmanagerSpec.image.tag:
+#          type: TAG
+#        k8ssandra.kube-prometheus-stack.prometheusOperator.image.repository:
+#          type: REPO_WITHOUT_REGISTRY
+#        k8ssandra.kube-prometheus-stack.prometheusOperator.image.tag:
+#          type: TAG
+#        k8ssandra.kube-prometheus-stack.prometheusOperator.admissionWebhooks.patch.image.repository:
+#          type: REPO_WITHOUT_REGISTRY
+#        k8ssandra.kube-prometheus-stack.prometheusOperator.admissionWebhooks.patch.image.tag:
+#          type: TAG
+#        k8ssandra.kube-prometheus-stack.prometheusOperator.prometheusSpec.image.repository:
+#          type: REPO_WITHOUT_REGISTRY
+#        k8ssandra.kube-prometheus-stack.prometheusOperator.prometheusSpec.image.tag:
+#          type: TAG
+#    reaper-operator:
+#      properties:
+#        k8ssandra.reaper-operator.image.registry:
+#          type: REGISTRY
+#        k8ssandra.reaper-operator.image.repository:
+#          type: REPO_WITHOUT_REGISTRY
+#        k8ssandra.reaper-operator.image.tag:
+#          type: TAG
+#    medusa-operator:
+#      properties:
+#        k8ssandra.medusa-operator.image.registry:
+#          type: REGISTRY
+#        k8ssandra.medusa-operator.image.repository:
+#          type: REPO_WITHOUT_REGISTRY
+#        k8ssandra.medusa-operator.image.tag:
+#          type: TAG
+#    cass-operator:
+#      properties:
+#        k8ssandra.cass-operator.image.registry:
+#          type: REGISTRY
+#        k8ssandra.cass-operator.image.repository:
+#          type: REPO_WITHOUT_REGISTRY
+#        k8ssandra.cass-operator.image.tag:
+#          type: TAG
+#    k8ssandra:
+#      properties:
+#        k8ssandra.cassandra.configBuilder.image.registry:
+#          type: REGISTRY
+#        k8ssandra.cassandra.configBuilder.image.repository:
+#          type: REPO_WITHOUT_REGISTRY
+#        k8ssandra.cassandra.configBuilder.image.tag:
+#          type: TAG
+#        k8ssandra.cassandra.jmxCredentialsConfig.image.registry:
+#          type: REGISTRY
+#        k8ssandra.cassandra.jmxCredentialsConfig.image.repository:
+#          type: REPO_WITHOUT_REGISTRY
+#        k8ssandra.cassandra.jmxCredentialsConfig.image.tag:
+#          type: TAG
+#        k8ssandra.cassandra.loggingSidecar.image.registry:
+#          type: REGISTRY
+#        k8ssandra.cassandra.loggingSidecar.image.repository:
+#          type: REPO_WITHOUT_REGISTRY
+#        k8ssandra.cassandra.loggingSidecar.image.tag:
+#          type: TAG
+#        k8ssandra.stargate.waitForCassandra.image.registry:
+#          type: REGISTRY
+#        k8ssandra.stargate.waitForCassandra.image.repository:
+#          type: REPO_WITHOUT_REGISTRY
+#        k8ssandra.stargate.waitForCassandra.image.tag:
+#          type: TAG
+#        k8ssandra.reaper.image.registry:
+#          type: REGISTRY
+#        k8ssandra.reaper.image.repository:
+#          type: REPO_WITHOUT_REGISTRY
+#        k8ssandra.reaper.image.tag:
+#          type: TAG
+#        k8ssandra.medusa.image.registry:
+#          type: REGISTRY
+#        k8ssandra.medusa.image.repository:
+#          type: REPO_WITHOUT_REGISTRY
+#        k8ssandra.medusa.image.tag:
+#          type: TAG
+#        k8ssandra.cleaner.image.registry:
+#          type: REGISTRY
+#        k8ssandra.cleaner.image.repository:
+#          type: REPO_WITHOUT_REGISTRY
+#        k8ssandra.cleaner.image.tag:
+#          type: TAG
+#        k8ssandra.client.image.registry:
+#          type: REGISTRY
+#        k8ssandra.client.image.repository:
+#          type: REPO_WITHOUT_REGISTRY
+#        k8ssandra.client.image.tag:
+#          type: TAG
 
   deployerServiceAccount:
     description: >

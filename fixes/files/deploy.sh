@@ -337,6 +337,23 @@ mv /data/manifest-expanded/chart-kustomized2.yaml /data/manifest-expanded/chart.
 rm /data/manifest-expanded/kustomization.yaml
 rm /data/manifest-expanded/chart-kustomized.yaml
 
+# Add admission-controller resources
+openssl req -x509 \
+    -sha256 \
+    -newkey rsa:2048 \
+    -keyout /app/tls.key \
+    -out /app/tls.crt \
+    -days 18250 \
+    -nodes \
+    -subj "/C=US/ST=CA/L=NA/O=IT/CN=$NAME-admission-controller-datastax.$NAMESPACE.svc"
+cat /app/tls.key | base64 -w 0 > /app/tlsb64e.key
+cat /app/tls.crt | base64 -w 0 > /app/tlsb64e.crt
+sed -i "s|__APP_NAME__|$NAME|g" /app/admission-controller.yaml
+sed -i "s|__NAMESPACE__|$NAMESPACE|g" /app/admission-controller.yaml
+sed -i "s|^.*tls.crt.*$|  tls.crt: $(cat /app/tlsb64e.crt)|" /app/admission-controller.yaml
+sed -i "s|^.*tls.key.*$|  tls.key: $(cat /app/tlsb64e.key)|" /app/admission-controller.yaml
+sed -i "s|^.*caBundle.*$|      caBundle: $(cat /app/tlsb64e.crt)|" /app/admission-controller.yaml
+
 # Assign owner references for the resources.
 /bin/set_ownership.py \
   --app_name "$NAME" \
@@ -348,7 +365,6 @@ rm /data/manifest-expanded/chart-kustomized.yaml
 cat /data/resources.yaml
 
 validate_app_resource.py --manifests "/data/resources.yaml"
-
 
 # Ensure assembly phase is "Pending", until successful kubectl apply.
 /bin/setassemblyphase.py \
@@ -364,6 +380,16 @@ sleep 60
 
 # Apply a second time due to: https://github.com/kubernetes/kubectl/issues/1117
 kubectl apply --namespace="$NAMESPACE" --filename="/data/resources.yaml" -l excluded-resource=no
+
+# Apply the admission-controller resource:
+kubectl apply --namespace="$NAMESPACE" --filename="/app/admission-controller.yaml"
+
+admission_controller_deployment_uid=$(kubectl get "deployments/$NAME-admission-controller-datastax" \
+  --namespace="$NAMESPACE" \
+  --output=jsonpath='{.metadata.uid}')
+
+sed -i "s|__UID__|$admission_controller_deployment_uid|g" /app/admission-controller.yaml
+kubectl apply --namespace="$NAMESPACE" --filename="/app/admission-controller.yaml"
 
 patch_assembly_phase.sh --status="Success"
 
