@@ -1,0 +1,212 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+patches:
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ServiceAccount
+      name: $NAME-grafana
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: Role
+      name: $NAME-grafana
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: RoleBinding
+      name: $NAME-grafana
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRole
+      name: $NAME-grafana-clusterrole
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRoleBinding
+      name: $NAME-grafana-clusterrolebinding
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      name: $NAME-grafana-test
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ServiceAccount
+      name: $NAME-cass-operator
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: Role
+      name: $NAME-cass-operator
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: RoleBinding
+      name: $NAME-cass-operator
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRole
+      name: $NAME-cass-operator-cr
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRoleBinding
+      name: $NAME-cass-operator-cr
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ServiceAccount
+      name: $NAME-kube-promethe-admission
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: Role
+      name: $NAME-kube-promethe-admission
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: RoleBinding
+      name: $NAME-kube-promethe-admission
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRole
+      name: $NAME-kube-promethe-admission
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRoleBinding
+      name: $NAME-kube-promethe-admission
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ServiceAccount
+      name: $NAME-kube-promethe-operator
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRole
+      name: $NAME-kube-promethe-operator
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRoleBinding
+      name: $NAME-kube-promethe-operator
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRole
+      name: $NAME-kube-promethe-operator-psp
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRoleBinding
+      name: $NAME-kube-promethe-operator-psp
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ServiceAccount
+      name: $NAME-kube-promethe-prometheus
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRole
+      name: $NAME-kube-promethe-prometheus
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRoleBinding
+      name: $NAME-kube-promethe-prometheus
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRole
+      name: $NAME-kube-promethe-prometheus-psp
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      kind: ClusterRoleBinding
+      name: $NAME-kube-promethe-prometheus-psp
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      name: $NAME-cleaner-k8ssandra
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      name: $NAME-cleaner-job-k8ssandra
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      name: $NAME-crd-upgrader-k8ssandra
+  - patch: |-
+      - op: replace
+        path: /metadata/labels/excluded-resource
+        value: "yes"
+    target:
+      name: $NAME-crd-upgrader-job-k8ssandra
+
+resources:
+  - $CHART_FILE_NAME
