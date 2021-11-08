@@ -24,7 +24,7 @@ You'll need the following tools in your development environment. If you are usin
 
 Configure gcloud as a docker credential helper:
 
-```
+```bash
 gcloud auth configure-docker
 ```
 
@@ -32,7 +32,7 @@ gcloud auth configure-docker
 
 Create a new cluster from the command line:
 
-```
+```bash
 export CLUSTER=k8ssandra-mp-cluster
 export ZONE=us-central1-a
 gcloud container clusters create "${CLUSTER}" --zone "$ZONE"
@@ -40,13 +40,13 @@ gcloud container clusters create "${CLUSTER}" --zone "$ZONE"
 
 Configure kubectl to connect to the cluster:
 
-```
+```bash
 gcloud container clusters get-credentials "${CLUSTER}" --zone "${ZONE}"
 ```
 
 #### Clone this repo
 
-```
+```bash
 git clone https://github.com/DSPN/k8ssandra-gcp-mp.git
 ```
 
@@ -56,7 +56,7 @@ An Application resource is a collection of individual Kubernetes components, suc
 
 To set up your cluster to understand Application resources, run the following command:
 
-```
+```bash
 kubectl apply -f "https://raw.githubusercontent.com/GoogleCloudPlatform/marketplace-k8s-app-tools/master/crd/app-crd.yaml"
 ```
 
