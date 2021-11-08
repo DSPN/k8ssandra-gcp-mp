@@ -13,7 +13,7 @@ You can use [Google Cloud Shell] or a local workstation to follow the steps belo
 
 #### Set up command-line tools
 
-You'll need the following tools in your development environment. If you are using Cloud Shell, gcloud, kubectl, Docker, git, helm, and kustomize are installed in your environment by default.
+You'll need the following tools in your development environment. If you are using Cloud Shell, these are all installed in your environment by default.
 
 * [gcloud](https://cloud.google.com/sdk/gcloud/)
 * [kubectl](https://kubernetes.io/docs/reference/kubectl/overview/)
@@ -64,20 +64,26 @@ You need to run this command once.
 
 The Application resource is defined by the [Kubernetes SIG-apps](https://github.com/kubernetes/community/tree/master/sig-apps) community. The source code can be found on [github.com/kubernetes-sigs/application](https://github.com/kubernetes-sigs/application).
 
+### Install the Application
+
+#### Navigate to the k8ssandra-gcp-mp directory
+
+```bash
+cd k8ssandra-gcp-mp
+```
+
 #### Download the k8ssandra charts
 
-```
+```bash
 helm repo add k8ssandra https://helm.k8ssandra.io/stable
 helm dependency build chart/k8ssandra-mp
 ```
-
-### Install the Application
 
 #### Configure the app with environment variables
 
 Choose an instance name and namespace for the app. In most cases you can use the `default` namespace.
 
-```
+```bash
 export APP_INSTANCE_NAME=k8ssandra-mp
 export NAMESPACE=default
 export DEFAULT_STORAGE_CLASS=k8ssandra-storage
@@ -87,7 +93,7 @@ export DEFAULT_STORAGE_CLASS=k8ssandra-storage
 
 Create a storage class that will be used by the Cassandra persistent storage volume claims:
 
-```
+```bash
 cat <<EOF | kubectl apply -f -
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
@@ -106,7 +112,7 @@ EOF
 
 If you use a namespace other than the `default`, run the command below to create a new namespace.
 
-```
+```bash
 kubectl create namespace "${NAMESPACE}"
 ```
 
@@ -116,14 +122,14 @@ kubectl create namespace "${NAMESPACE}"
 
 ###### service account:
 
-```
+```bash
 kubectl create serviceaccount "${APP_INSTANCE_NAME}-grafanaserviceaccount" \
     --namespace="${NAMESPACE}"
 ```
 
 ###### role:
 
-```
+```bash
 kubectl create role "${APP_INSTANCE_NAME}:grafanaServiceAccount" \
     --namespace="${NAMESPACE}" \
     --verb=use,get,list,watch \
@@ -132,7 +138,7 @@ kubectl create role "${APP_INSTANCE_NAME}:grafanaServiceAccount" \
 
 ###### rolebinding:
 
-```
+```bash
 kubectl create rolebinding "${APP_INSTANCE_NAME}:grafanaServiceAccount \
     --namespace="${NAMESPACE}" \
     --role="${APP_INSTANCE_NAME}:grafanaServiceAccount" \
@@ -143,14 +149,14 @@ kubectl create rolebinding "${APP_INSTANCE_NAME}:grafanaServiceAccount \
 
 ###### service account:
 
-```
+```bash
 kubectl create serviceaccount "${APP_INSTANCE_NAME}-cass-operatorserviceaccount" \
     --namespace="${NAMESPACE}"
 ```
 
 ###### role:
 
-```
+```bash
 cat <<EOF | kubectl apply -f -
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -229,7 +235,7 @@ EOF
 
 ###### rolebinding:
 
-```
+```bash
 kubectl create rolebinding "${APP_INSTANCE_NAME}:cass-operatorServiceAccount \
     --namespace="${NAMESPACE}" \
     --role="${APP_INSTANCE_NAME}:cass-operatorServiceAccount" \
@@ -238,7 +244,7 @@ kubectl create rolebinding "${APP_INSTANCE_NAME}:cass-operatorServiceAccount \
 
 ###### clusterrole:
 
-```
+```bash
 cat <<EOF | kubectl apply -f -
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -261,7 +267,7 @@ EOF
 
 ###### clusterrolebinding:
 
-```
+```bash
 kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:cass-operatorServiceAccount \
     --namespace="${NAMESPACE}" \
     --clusterrole="${APP_INSTANCE_NAME}:cass-operatorServiceAccount" \
@@ -272,14 +278,14 @@ kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:cass-operatorServiceAcco
 
 ###### service account:
 
-```
+```bash
 kubectl create serviceaccount "${APP_INSTANCE_NAME}-kube-promethe-admissionserviceaccount" \
     --namespace="${NAMESPACE}"
 ```
 
 ###### role:
 
-```
+```bash
 kubectl create role "${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount" \
     --namespace="${NAMESPACE}" \
     --verb=get,create \
@@ -288,7 +294,7 @@ kubectl create role "${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount"
 
 ###### rolebinding:
 
-```
+```bash
 kubectl create rolebinding "${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount \
     --namespace="${NAMESPACE}" \
     --role="${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount" \
@@ -297,7 +303,7 @@ kubectl create rolebinding "${APP_INSTANCE_NAME}:kube-promethe-admissionServiceA
 
 ###### clusterrole:
 
-```
+```bash
 cat <<EOF | kubectl apply -f -
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -326,7 +332,7 @@ EOF
 
 ###### clusterrolebinding:
 
-```
+```bash
 kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount \
     --namespace="${NAMESPACE}" \
     --clusterrole="${NAMESPACE}:${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount" \
@@ -337,14 +343,14 @@ kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:kube-promethe-admissionS
 
 ###### service account:
 
-```
+```bash
 kubectl create serviceaccount "${APP_INSTANCE_NAME}-kube-promethe-operatorserviceaccount" \
     --namespace="${NAMESPACE}"
 ```
 
 ###### clusterrole:
 
-```
+```bash
 cat <<EOF | kubectl apply -f -
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -435,7 +441,7 @@ EOF
 
 ###### clusterrolebinding:
 
-```
+```bash
 kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:kube-promethe-operatorServiceAccount \
     --namespace="${NAMESPACE}" \
     --clusterrole="${NAMESPACE}:${APP_INSTANCE_NAME}:kube-promethe-operatorServiceAccount" \
@@ -446,14 +452,14 @@ kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:kube-promethe-operatorSe
 
 ###### service account:
 
-```
+```bash
 kubectl create serviceaccount "${APP_INSTANCE_NAME}-kube-promethe-prometheusserviceaccount" \
     --namespace="${NAMESPACE}"
 ```
 
 ###### clusterrole:
 
-```
+```bash
 cat <<EOF | kubectl apply -f -
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -494,7 +500,7 @@ EOF
 
 ###### clusterrolebinding:
 
-```
+```bash
 kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:kube-promethe-prometheusServiceAccount \
     --namespace="${NAMESPACE}" \
     --clusterrole="${NAMESPACE}:${APP_INSTANCE_NAME}:kube-promethe-prometheusServiceAccount" \
@@ -505,7 +511,7 @@ kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:kube-promethe-prometheus
 
 Use `helm template` to expand the template. We recommend that you save the expanded manifest file for future updates to the application.
 
-```
+```bash
 helm template "${APP_INSTANCE_NAME}" chart/k8ssandra-mp \
     --namespace "${NAMESPACE}" \
     --include-crds \
@@ -516,7 +522,7 @@ helm template "${APP_INSTANCE_NAME}" chart/k8ssandra-mp \
 
 We explicitly created the service accounts and RBAC resources above, so we need to modify the manifest to account for this.
 
-```
+```bash
 ./scripts/patch-manifest.sh "${APP_INSTANCE_NAME}"
 ```
 
@@ -526,7 +532,7 @@ This will replace default service account names and include common labels needed
 
 Use `kubectl` to apply the manifest to your Kubernetes cluster:
 
-```
+```bash
 kubectl apply -f "${APP_INSTANCE_NAME}_manifest.yaml" --namespace "${NAMESPACE}"
 ```
 
