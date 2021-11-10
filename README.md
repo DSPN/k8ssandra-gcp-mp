@@ -130,10 +130,28 @@ kubectl create serviceaccount "${APP_INSTANCE_NAME}-grafanaserviceaccount" \
 ###### role:
 
 ```bash
-kubectl create role "${APP_INSTANCE_NAME}:grafanaServiceAccount" \
-    --namespace="${NAMESPACE}" \
-    --verb=use,get,list,watch \
-    --resource=extensions,"",podsecuritypolicies,secrets,configmaps
+cat <<EOF | kubectl apply -f -
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app.kubernetes.io/name: ${NAMESPACE}
+  name: ${APP_INSTANCE_NAME}:grafanaServiceAccount
+  namespace: ${NAMESPACE}
+rules:
+- apiGroups:
+  - extensions
+  - ""
+  resources:
+  - podsecuritypolicies
+  - secrets
+  - configmaps
+  verbs:
+  - use
+  - get
+  - list
+  - watch
+EOF
 ```
 
 ###### rolebinding:
