@@ -564,13 +564,13 @@ This will replace default service account names and include common labels needed
 Use `kubectl` to apply the manifest to your Kubernetes cluster:
 
 ```bash
-kubectl apply -f "${APP_INSTANCE_NAME}_manifest.yaml" --namespace "${NAMESPACE}" --selector excluded-resource=no"
+kubectl apply -f "${APP_INSTANCE_NAME}_manifest.yaml" --namespace="${NAMESPACE}" --selector=excluded-resource=no
 ```
 
 The first time you run this command, some needed Custom Resource Definitions are created, but some resources will get created prior to their definitions, which results in some creation errors. This is expected. We need to run this same command a second time (after the CRDs are created) to get all the resources created without error. 
 
 ```bash
-kubectl apply -f "${APP_INSTANCE_NAME}_manifest.yaml" --namespace "${NAMESPACE}" --selector excluded-resource=no"
+kubectl apply -f "${APP_INSTANCE_NAME}_manifest.yaml" --namespace="${NAMESPACE}" --selector=excluded-resource=no
 ```
 
 # Basic usage
@@ -586,8 +586,8 @@ kubectl apply -f "${APP_INSTANCE_NAME}_manifest.yaml" --namespace "${NAMESPACE}"
 ## Using the Google Cloud Platform Console
 
 1. In the GCP Console, open [Kubernetes Applications].
-2. From the list of applications, click *k8ssandra-mp*.
-3. On the Application Details page, click *Delete*.
+2. From the list of applications, click **k8ssandra-mp**.
+3. On the Application Details page, click **Delete**.
 
 ## Using the command line
 
