@@ -157,10 +157,10 @@ EOF
 ###### rolebinding:
 
 ```bash
-kubectl create rolebinding "${APP_INSTANCE_NAME}:grafanaServiceAccount \
+kubectl create rolebinding "${APP_INSTANCE_NAME}:grafanaServiceAccount" \
     --namespace="${NAMESPACE}" \
     --role="${APP_INSTANCE_NAME}:grafanaServiceAccount" \
-    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-grafanaserviceaccount
+    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-grafanaserviceaccount"
 ```
 
 ##### cass-operator
@@ -254,10 +254,10 @@ EOF
 ###### rolebinding:
 
 ```bash
-kubectl create rolebinding "${APP_INSTANCE_NAME}:cass-operatorServiceAccount \
+kubectl create rolebinding "${APP_INSTANCE_NAME}:cass-operatorServiceAccount" \
     --namespace="${NAMESPACE}" \
     --role="${APP_INSTANCE_NAME}:cass-operatorServiceAccount" \
-    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-cass-operatorserviceaccount
+    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-cass-operatorserviceaccount"
 ```
 
 ###### clusterrole:
@@ -286,10 +286,10 @@ EOF
 ###### clusterrolebinding:
 
 ```bash
-kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:cass-operatorServiceAccount \
+kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:cass-operatorServiceAccount" \
     --namespace="${NAMESPACE}" \
     --clusterrole="${APP_INSTANCE_NAME}:cass-operatorServiceAccount" \
-    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-cass-operatorserviceaccount
+    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-cass-operatorserviceaccount"
 ```
 
 ##### kube-promethe-admission
@@ -313,10 +313,10 @@ kubectl create role "${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount"
 ###### rolebinding:
 
 ```bash
-kubectl create rolebinding "${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount \
+kubectl create rolebinding "${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount" \
     --namespace="${NAMESPACE}" \
     --role="${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount" \
-    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-kube-promethe-admissionserviceaccount
+    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-kube-promethe-admissionserviceaccount"
 ```
 
 ###### clusterrole:
@@ -351,10 +351,10 @@ EOF
 ###### clusterrolebinding:
 
 ```bash
-kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount \
+kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount" \
     --namespace="${NAMESPACE}" \
     --clusterrole="${NAMESPACE}:${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount" \
-    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-kube-promethe-admissionserviceaccount
+    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-kube-promethe-admissionserviceaccount"
 ```
 
 ##### kube-promethe-operator
@@ -460,10 +460,10 @@ EOF
 ###### clusterrolebinding:
 
 ```bash
-kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:kube-promethe-operatorServiceAccount \
+kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:kube-promethe-operatorServiceAccount" \
     --namespace="${NAMESPACE}" \
     --clusterrole="${NAMESPACE}:${APP_INSTANCE_NAME}:kube-promethe-operatorServiceAccount" \
-    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-kube-promethe-operatorserviceaccount
+    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-kube-promethe-operatorserviceaccount"
 ```
 
 ##### kube-promethe-prometheus
@@ -519,10 +519,10 @@ EOF
 ###### clusterrolebinding:
 
 ```bash
-kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:kube-promethe-prometheusServiceAccount \
+kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:kube-promethe-prometheusServiceAccount" \
     --namespace="${NAMESPACE}" \
     --clusterrole="${NAMESPACE}:${APP_INSTANCE_NAME}:kube-promethe-prometheusServiceAccount" \
-    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-kube-promethe-prometheusserviceaccount
+    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-kube-promethe-prometheusserviceaccount"
 ```
 
 #### Expand the manifest template
