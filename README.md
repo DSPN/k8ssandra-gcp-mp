@@ -304,10 +304,23 @@ kubectl create serviceaccount "${APP_INSTANCE_NAME}-kube-promethe-admissionservi
 ###### role:
 
 ```bash
-kubectl create role "${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount" \
-    --namespace="${NAMESPACE}" \
-    --verb=get,create \
-    --resource="",secrets,configmaps
+cat <<EOF | kubectl apply -f -
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  labels:
+    app.kubernetes.io/name: ${APP_INSTANCE_NAME}
+  name: ${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount
+  namespace: ${NAMESPACE}
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - secrets
+  verbs:
+  - get
+  - create
+EOF
 ```
 
 ###### rolebinding:
