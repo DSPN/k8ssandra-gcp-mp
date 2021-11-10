@@ -35,7 +35,7 @@ Create a new cluster from the command line:
 ```bash
 export CLUSTER=k8ssandra-mp-cluster
 export ZONE=us-central1-a
-gcloud container clusters create "${CLUSTER}" --zone "$ZONE"
+gcloud container clusters create "${CLUSTER}" --zone "$ZONE" --machine-type e2-standard-2
 ```
 
 Configure kubectl to connect to the cluster:
