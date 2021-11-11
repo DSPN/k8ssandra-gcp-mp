@@ -81,12 +81,45 @@ helm dependency build chart/k8ssandra-mp
 
 #### Configure the app with environment variables
 
-Choose an instance name and namespace for the app. In most cases you can use the `default` namespace.
+Choose an instance name, namespace, and default storage class for the app. In most cases you can use the `default` namespace.
 
 ```bash
 export APP_INSTANCE_NAME=k8ssandra-mp
 export NAMESPACE=default
 export DEFAULT_STORAGE_CLASS=k8ssandra-storage
+```
+
+Set up the image registry, repository, and tag:
+
+```bash
+export REGISTRY="gcr.io"
+export REPOSITORY="gke-launcher-dev/k8ssandra-mp"
+export TAG="1.0"
+```
+
+Configure the container images:
+
+```bash
+export IMAGE_BUSY_BOX="busybox"
+export IMAGE_CASS_OPERATOR="cass-operator"
+export IMAGE_CASSANDRA="cassandra"
+export IMAGE_CASSANDRA_CONFIG_BUILDER="cassconfigbuilder"
+export IMAGE_CLEANER="cleaner"
+export IMAGE_CLIENT="client"
+export IMAGE_GRAFANA="grafana"
+export IMAGE_GRAFANA_IMAGE_RENDERER="grafanaimagerenderer"
+export IMAGE_GRAFANA_SIDECAR="grafanasidecar"
+export IMAGE_INIT_CHOWN_DATA="initchowndata"
+export IMAGE_JMX_CREDENTIALS_CONFIG="jmxcredentialsconfig"
+export IMAGE_LOGGING_SIDECAR="loggingsidecar"
+export IMAGE_MEDUSA="medusa"
+export IMAGE_MEDUSA_OPERATOR="medusaoperator"
+export IMAGE_PROMETHEUS_OPERATOR="prometheusoperator"
+export IMAGE_PROMETHEUS_SPEC="prometheusspec"
+export IMAGE_REAPER="reaper"
+export IMAGE_REAPER_OPERATOR="reaperoperator"
+export IMAGE_STARGATE="stargate"
+export IMAGE_WAIT_FOR_CASSANDRA="waitforcassandra"
 ```
 
 #### Create a suitable storage class
@@ -116,20 +149,16 @@ If you use a namespace other than the `default`, run the command below to create
 kubectl create namespace "${NAMESPACE}"
 ```
 
-#### Create service accounts and RBAC resources
+#### Create service accounts and RBAC resources for each of the k8ssandra components
 
 ##### grafana
 
-###### service account:
-
 ```bash
+#service account:
 kubectl create serviceaccount "${APP_INSTANCE_NAME}-grafanaserviceaccount" \
     --namespace="${NAMESPACE}"
-```
 
-###### role:
-
-```bash
+#role:
 cat <<EOF | kubectl apply -f -
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -152,11 +181,8 @@ rules:
   - list
   - watch
 EOF
-```
 
-###### rolebinding:
-
-```bash
+#rolebinding:
 kubectl create rolebinding "${APP_INSTANCE_NAME}:grafanaServiceAccount" \
     --namespace="${NAMESPACE}" \
     --role="${APP_INSTANCE_NAME}:grafanaServiceAccount" \
@@ -165,16 +191,12 @@ kubectl create rolebinding "${APP_INSTANCE_NAME}:grafanaServiceAccount" \
 
 ##### cass-operator
 
-###### service account:
-
 ```bash
+#service account:
 kubectl create serviceaccount "${APP_INSTANCE_NAME}-cass-operatorserviceaccount" \
     --namespace="${NAMESPACE}"
-```
 
-###### role:
-
-```bash
+#role:
 cat <<EOF | kubectl apply -f -
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -249,20 +271,14 @@ rules:
   verbs:
   - '*'
 EOF
-```
 
-###### rolebinding:
-
-```bash
+# rolebinding:
 kubectl create rolebinding "${APP_INSTANCE_NAME}:cass-operatorServiceAccount" \
     --namespace="${NAMESPACE}" \
     --role="${APP_INSTANCE_NAME}:cass-operatorServiceAccount" \
     --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-cass-operatorserviceaccount"
-```
 
-###### clusterrole:
-
-```bash
+# clusterrole:
 cat <<EOF | kubectl apply -f -
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -281,11 +297,8 @@ rules:
   - watch
   - list
 EOF
-```
 
-###### clusterrolebinding:
-
-```bash
+# clusterrolebinding:
 kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:cass-operatorServiceAccount" \
     --namespace="${NAMESPACE}" \
     --clusterrole="${APP_INSTANCE_NAME}:cass-operatorServiceAccount" \
@@ -294,16 +307,12 @@ kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:cass-operatorServiceAcco
 
 ##### kube-promethe-admission
 
-###### service account:
-
 ```bash
+# service account:
 kubectl create serviceaccount "${APP_INSTANCE_NAME}-kube-promethe-admissionserviceaccount" \
     --namespace="${NAMESPACE}"
-```
 
-###### role:
-
-```bash
+# role:
 cat <<EOF | kubectl apply -f -
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -321,20 +330,14 @@ rules:
   - get
   - create
 EOF
-```
 
-###### rolebinding:
-
-```bash
+# rolebinding:
 kubectl create rolebinding "${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount" \
     --namespace="${NAMESPACE}" \
     --role="${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount" \
     --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-kube-promethe-admissionserviceaccount"
-```
 
-###### clusterrole:
-
-```bash
+# clusterrole:
 cat <<EOF | kubectl apply -f -
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -359,11 +362,8 @@ rules:
   verbs:
   - use
 EOF
-```
 
-###### clusterrolebinding:
-
-```bash
+# clusterrolebinding:
 kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount" \
     --namespace="${NAMESPACE}" \
     --clusterrole="${NAMESPACE}:${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount" \
@@ -372,16 +372,12 @@ kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:kube-promethe-admissionS
 
 ##### kube-promethe-operator
 
-###### service account:
-
 ```bash
+# service account:
 kubectl create serviceaccount "${APP_INSTANCE_NAME}-kube-promethe-operatorserviceaccount" \
     --namespace="${NAMESPACE}"
-```
 
-###### clusterrole:
-
-```bash
+# clusterrole:
 cat <<EOF | kubectl apply -f -
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -468,11 +464,8 @@ rules:
   verbs:
   - use
 EOF
-```
 
-###### clusterrolebinding:
-
-```bash
+# clusterrolebinding:
 kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:kube-promethe-operatorServiceAccount" \
     --namespace="${NAMESPACE}" \
     --clusterrole="${NAMESPACE}:${APP_INSTANCE_NAME}:kube-promethe-operatorServiceAccount" \
@@ -481,16 +474,12 @@ kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:kube-promethe-operatorSe
 
 ##### kube-promethe-prometheus
 
-###### service account:
-
 ```bash
+# service account:
 kubectl create serviceaccount "${APP_INSTANCE_NAME}-kube-promethe-prometheusserviceaccount" \
     --namespace="${NAMESPACE}"
-```
 
-###### clusterrole:
-
-```bash
+# clusterrole:
 cat <<EOF | kubectl apply -f -
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -527,11 +516,8 @@ rules:
   verbs:
   - use
 EOF
-```
 
-###### clusterrolebinding:
-
-```bash
+# clusterrolebinding:
 kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:kube-promethe-prometheusServiceAccount" \
     --namespace="${NAMESPACE}" \
     --clusterrole="${NAMESPACE}:${APP_INSTANCE_NAME}:kube-promethe-prometheusServiceAccount" \
@@ -546,6 +532,61 @@ Use `helm template` to expand the template. We recommend that you save the expan
 helm template "${APP_INSTANCE_NAME}" chart/k8ssandra-mp \
     --namespace "${NAMESPACE}" \
     --include-crds \
+    --set k8ssandra.cassandra.image.registry="${REGISTRY}" \
+    --set k8ssandra.cassandra.image.repository="${REPOSITORY}/${IMAGE_CASSANDRA}" \
+    --set k8ssandra.cassandra.image.tag="${TAG}" \
+    --set k8ssandra.cassandra.configBuilder.image.registry="${REGISTRY}" \
+    --set k8ssandra.cassandra.configBuilder.image.repository="${REPOSITORY}/${IMAGE_CASSANDRA_CONFIG_BUILDER}" \
+    --set k8ssandra.cassandra.configBuilder.image.tag="${TAG}" \
+    --set k8ssandra.cassandra.jmxCredentialsConfig.image.registry="${REGISTRY}" \
+    --set k8ssandra.cassandra.jmxCredentialsConfig.image.repository="${REPOSITORY}/${IMAGE_JMX_CREDENTIALS_CONFIG}" \
+    --set k8ssandra.cassandra.jmxCredentialsConfig.image.tag="${TAG}" \
+    --set k8ssandra.cassandra.loggingSidecar.image.registry="${REGISTRY}" \
+    --set k8ssandra.cassandra.loggingSidecar.image.repository="${REPOSITORY}/${IMAGE_LOGGING_SIDECAR}" \
+    --set k8ssandra.cassandra.loggingSidecar.image.tag="${TAG}" \
+    --set k8ssandra.stargate.image.registry="${REGISTRY}" \
+    --set k8ssandra.stargate.image.repository="${REPOSITORY}/${IMAGE_STARGATE}" \
+    --set k8ssandra.stargate.image.tag="${TAG}" \
+    --set k8ssandra.stargate.waitForCassandra.image.registry="${REGISTRY}" \
+    --set k8ssandra.stargate.waitForCassandra.image.repository="${REPOSITORY}/${IMAGE_WAIT_FOR_CASSANDRA}" \
+    --set k8ssandra.stargate.waitForCassandra.image.tag="${TAG}" \
+    --set k8ssandra.reaper.image.registry="${REGISTRY}" \
+    --set k8ssandra.reaper.image.repository="${REPOSITORY}/${IMAGE_REAPER}" \
+    --set k8ssandra.reaper.image.tag="${TAG}" \
+    --set k8ssandra.medusa.image.registry="${REGISTRY}" \
+    --set k8ssandra.medusa.image.repository="${REPOSITORY}/${IMAGE_MEDUSA}" \
+    --set k8ssandra.medusa.image.tag="${TAG}" \
+    --set k8ssandra.cleaner.image.registry="${REGISTRY}" \
+    --set k8ssandra.cleaner.image.repository="${REPOSITORY}/${IMAGE_CLEANER}" \
+    --set k8ssandra.cleaner.image.tag="${TAG}" \
+    --set k8ssandra.client.image.registry="${REGISTRY}" \
+    --set k8ssandra.client.image.repository="${REPOSITORY}/${IMAGE_CLIENT}" \
+    --set k8ssandra.client.image.tag="${TAG}" \
+    --set k8ssandra.cass-operator.image.registry="${REGISTRY}" \
+    --set k8ssandra.cass-operator.image.repository="${REPOSITORY}/${IMAGE_CASS_OPERATOR}" \
+    --set k8ssandra.cass-operator.image.tag="${TAG}" \
+    --set k8ssandra.reaper-operator.image.registry="${REGISTRY}" \
+    --set k8ssandra.reaper-operator.image.repository="${REPOSITORY}/${IMAGE_REAPER_OPERATOR}" \
+    --set k8ssandra.reaper-operator.image.tag="${TAG}" \
+    --set k8ssandra.medusa-operator.image.registry="${REGISTRY}" \
+    --set k8ssandra.medusa-operator.image.repository="${REPOSITORY}/${IMAGE_MEDUSA_OPERATOR}" \
+    --set k8ssandra.medusa-operator.image.tag="${TAG}" \
+    --set k8ssandra.kube-prometheus-stack.prometheus-operator.image.registry="${REGISTRY}" \
+    --set k8ssandra.kube-prometheus-stack.prometheus-operator.image.repository="${REPOSITORY}/${IMAGE_PROMETHEUS_OPERATOR}" \
+    --set k8ssandra.kube-prometheus-stack.prometheus-operator.image.tag="${TAG}" \
+    --set k8ssandra.kube-prometheus-stack.prometheus-operator.prometheusSpec.image.registry="${REGISTRY}" \
+    --set k8ssandra.kube-prometheus-stack.prometheus-operator.prometheusSpec.image.repository="${REPOSITORY}/${IMAGE_PROMETHEUS_SPEC}" \
+    --set k8ssandra.kube-prometheus-stack.prometheus-operator.prometheusSpec.image.tag="${TAG}" \
+    --set k8ssandra.grafana.image.registry="${REGISTRY}" \
+    --set k8ssandra.grafana.image.repository="${REPOSITORY}/${IMAGE_GRAFANA}" \
+    --set k8ssandra.grafana.image.tag="${TAG}" \
+    --set k8ssandra.kube-prometheus-stack.grafana.initChownData.image.registry="${REGISTRY}" \
+    --set k8ssandra.kube-prometheus-stack.grafana.initChownData.image.repository="${REPOSITORY}/${IMAGE_INIT_CHOWN_DATA}" \
+    --set k8ssandra.kube-prometheus-stack.grafana.initChownData.image.tag="${TAG}" \
+    --set k8ssandra.kube-prometheus-stack.grafana.sidecar.image.repository="${REGISTRY}/${REPOSITORY}/${IMAGE_GRAFANA_SIDECAR}" \
+    --set k8ssandra.kube-prometheus-stack.grafana.sidecar.image.tag="${TAG}" \
+    --set k8ssandra.kube-prometheus-stack.grafana.imageRenderer.image.repository="${REGISTRY}/${REPOSITORY}" \
+    --set k8ssandra.kube-prometheus-stack.grafana.imageRenderer.image.tag="${TAG}" \
     > "${APP_INSTANCE_NAME}_manifest.yaml"
 ```
 
@@ -570,7 +611,9 @@ kubectl apply -f "${APP_INSTANCE_NAME}_manifest.yaml" --namespace="${NAMESPACE}"
 The first time you run this command, some needed Custom Resource Definitions are created, but some resources will get created prior to their definitions, which results in some creation errors. This is expected. We need to run this same command a second time (after the CRDs are created) to get all the resources created without error. 
 
 ```bash
-kubectl apply -f "${APP_INSTANCE_NAME}_manifest.yaml" --namespace="${NAMESPACE}" --selector=excluded-resource=no
+kubectl apply -f "${APP_INSTANCE_NAME}_manifest.yaml" \
+    --namespace="${NAMESPACE}" \
+    --selector=excluded-resource=no \
 ```
 
 # Basic usage
