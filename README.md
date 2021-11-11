@@ -677,7 +677,7 @@ kubectl delete cassandradatacenter \
     --selector app.kubernetes.io/name="${APP_INSTANCE_NAME}"
 ```
 
-Resources of this type need to be deleted prior to the cass-operator deployment, which happens when the following command is run.
+Resources of this type need to be deleted prior to the cass-operator deployment. The cass-operator deployment will be deleted during the next step, so it's important that this gets run first.
 
 Delete all other Application resources.
 
@@ -690,15 +690,19 @@ for resource_type in \
     deployment \
     job \
     mutatingwebhookconfiguration \
+    persistentvolume \
+    persistentvolumeclaim \
     pod \
     podsecuritypolicy \
     prometheus \
     prometheusrule \
     reaper \
+    replicaset \
     role \
     rolebinding \
     secret \
     service \
+    serviceaccount \
     servicemonitor \
     statefulset \
     validatingwebhookconfiguration; do
