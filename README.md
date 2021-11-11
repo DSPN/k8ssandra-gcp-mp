@@ -629,15 +629,15 @@ This will replace default service account names and include common labels needed
 Use `kubectl` to apply the manifest to your Kubernetes cluster:
 
 ```bash
-kubectl apply -f "${APP_INSTANCE_NAME}_manifest.yaml" --namespace="${NAMESPACE}" --selector=excluded-resource=no
+kubectl apply -f "${APP_INSTANCE_NAME}_manifest.yaml" --namespace="${NAMESPACE}" --selector excluded-resource=no
 ```
 
 The first time you run this command, some needed Custom Resource Definitions are created, but some resources will get created prior to their definitions, which results in some creation errors. This is expected. We need to run this same command a second time (after the CRDs are created) to get all the resources created without error. 
 
 ```bash
 kubectl apply -f "${APP_INSTANCE_NAME}_manifest.yaml" \
-    --namespace="${NAMESPACE}" \
-    --selector=excluded-resource=no \
+    --namespace "${NAMESPACE}" \
+    --selector excluded-resource=no
 ```
 
 # Basic usage
@@ -669,18 +669,42 @@ export NAMESPACE=default
 
 ### Delete the resources
 
-To delete the resources, use the expanded manifest file used for the installation.
+First delete the cassandradatacenter resources:
 
-Run `kubectl` on the expanded manifest file:
-
+```bash
+kubectl delete cassandradatacenter \
+    --namespace "${NAMESPACE}" \
+    --selector app.kubernetes.io/name="${APP_INSTANCE_NAME}"
 ```
-kubectl delete -f ${APP_INSTANCE_NAME}_manifest --selector excluded-resource=no --namespace $NAMESPACE
-```
 
-If you don't have the expanded manifest, delete the resources by type and label:
+Resources of this type need to be deleted prior to the cass-operator deployment, which happens when the following command is run.
 
-```
-kubectl delete application,statefulset,service,deployment,secret,role,rolebinding,cassandradatacenter \
-    --namespace "$NAMESPACE" \
-    --selector app.kubernetes.io/name=${APP_INSTANCE_NAME}
+Delete all other Application resources.
+
+```bash
+for resource_type in \
+    application \
+    clusterrole \
+    clusterrolebinding \
+    configmap \
+    deployment \
+    job \
+    mutatingwebhookconfiguration \
+    pod \
+    podsecuritypolicy \
+    prometheus \
+    prometheusrule \
+    reaper \
+    role \
+    rolebinding \
+    secret \
+    service \
+    servicemonitor \
+    statefulset \
+    validatingwebhookconfiguration; do
+
+    kubectl delete "${resource_type}" \
+        --selector app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
+        --namespace "${NAMESPACE}"
+done
 ```
