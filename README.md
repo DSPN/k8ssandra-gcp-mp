@@ -631,7 +631,16 @@ First use `kubectl` to apply the CustomResourceDefinitions to your Kubernetes cl
 ```bash
 kubectl apply -f "${APP_INSTANCE_NAME}_manifest.yaml" \
     --namespace="${NAMESPACE}" \
+    --selector is-crd=yes || true
+
+# We need to apply a second time here to work-around resource order of creation issues.
+
+kubectl apply -f "${APP_INSTANCE_NAME}_manifest.yaml" \
+    --namespace="${NAMESPACE}" \
     --selector is-crd=yes
+
+# Give enough time for CRDs to be available in the Kubernets cluster.
+sleep 60
 ```
 
 Next, use `kubectl` to apply all the other resources to your Kubernetes cluster:
