@@ -626,13 +626,15 @@ This will replace default service account names and include common labels needed
 
 #### Apply the manifest to your Kubernetes cluster
 
-Use `kubectl` to apply the manifest to your Kubernetes cluster:
+First use `kubectl` to apply the CustomResourceDefinitions to your Kubernetes cluster:
 
 ```bash
-kubectl apply -f "${APP_INSTANCE_NAME}_manifest.yaml" --namespace="${NAMESPACE}" --selector excluded-resource=no
+kubectl apply -f "${APP_INSTANCE_NAME}_manifest.yaml" \
+    --namespace="${NAMESPACE}" \
+    --selector is-crd=yes
 ```
 
-The first time you run this command, some needed Custom Resource Definitions are created, but some resources will get created prior to their definitions, which results in some creation errors. This is expected. We need to run this same command a second time (after the CRDs are created) to get all the resources created without error. 
+Next, use `kubectl` to apply all the other resources to your Kubernetes cluster:
 
 ```bash
 kubectl apply -f "${APP_INSTANCE_NAME}_manifest.yaml" \
@@ -679,7 +681,7 @@ kubectl delete cassandradatacenter \
 
 Resources of this type need to be deleted prior to the cass-operator deployment. The cass-operator deployment will be deleted during the next step, so it's important that this gets run first.
 
-Delete all other Application resources.
+Delete all other Application resources:
 
 ```bash
 for resource_type in \
