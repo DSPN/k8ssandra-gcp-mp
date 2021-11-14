@@ -611,6 +611,19 @@ helm template "${APP_INSTANCE_NAME}" chart/k8ssandra-mp \
     --set k8ssandra.kube-prometheus-stack.grafana.sidecar.image.tag="${TAG}" \
     --set k8ssandra.kube-prometheus-stack.grafana.imageRenderer.image.repository="${REGISTRY}/${REPOSITORY}" \
     --set k8ssandra.kube-prometheus-stack.grafana.imageRenderer.image.tag="${TAG}" \
+    --set k8ssandra.cassandra.cassandraLibDirVolume.storageClass="${DEFAULT_STORAGE_CLASS}" \
+    --set k8ssandra.cassandra.cassandraLibDirVolume.size="1Gi" \
+    --set k8ssandra.cassandra.allowMultipleNodesPerWorker="true" \
+    --set k8ssandra.cassandra.heap.size="1G" \
+    --set k8ssandra.cassandra.heap.newGenSize="1G" \
+    --set k8ssandra.cassandra.resources.requests.cpu="1000m" \
+    --set k8ssandra.cassandra.resources.requests.memory="2Gi" \
+    --set k8ssandra.cassandra.resources.limits.cpu="1000m" \
+    --set k8ssandra.cassandra.resources.limits.memory="2Gi" \
+    --set k8ssandra.reaper.enabled="true" \
+    --set k8ssandra.reaper-operator.enabled="true" \
+    --set k8ssandra.stargate.enabled="true" \
+    --set k8ssandra.kube-prometheus-stack.enabled="true" \
     > "${APP_INSTANCE_NAME}_manifest.yaml"
 ```
 
@@ -648,7 +661,7 @@ Next, use `kubectl` to apply all the other resources to your Kubernetes cluster:
 ```bash
 kubectl apply -f "${APP_INSTANCE_NAME}_manifest.yaml" \
     --namespace "${NAMESPACE}" \
-    --selector excluded-resource=no
+    --selector excluded-resource=no,is-crd=no
 ```
 
 # Basic usage
