@@ -664,14 +664,6 @@ kubectl apply -f "${APP_INSTANCE_NAME}_manifest.yaml" \
     --selector excluded-resource=no,is-crd=no
 ```
 
-# Basic usage
-
-# Back up and restore
-
-# Image updates
-
-# Scaling
-
 # Uninstall the Application
 
 ## Using the Google Cloud Platform Console
