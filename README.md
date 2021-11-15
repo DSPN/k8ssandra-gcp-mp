@@ -646,6 +646,8 @@ kubectl apply -f "${APP_INSTANCE_NAME}_manifest.yaml" \
     --namespace="${NAMESPACE}" \
     --selector is-crd=yes || true
 
+sleep 5
+
 # We need to apply a second time here to work-around resource order of creation issues.
 
 kubectl apply -f "${APP_INSTANCE_NAME}_manifest.yaml" \
