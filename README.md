@@ -624,8 +624,8 @@ helm template "${APP_INSTANCE_NAME}" chart/k8ssandra-mp \
     --set k8ssandra.reaper-operator.enabled="true" \
     --set k8ssandra.stargate.enabled="true" \
     --set k8ssandra.kube-prometheus-stack.enabled="true" \
-    --set k8ssandra.stargate.livenessInitialDelaySeconds="560" \
-    --set k8ssandra.stargate.readinessInitialDelaySeconds="560" \
+    --set k8ssandra.stargate.livenessInitialDelaySeconds="240" \
+    --set k8ssandra.stargate.readinessInitialDelaySeconds="240" \
     > "${APP_INSTANCE_NAME}_manifest.yaml"
 ```
 
