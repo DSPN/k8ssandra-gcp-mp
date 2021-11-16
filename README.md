@@ -718,7 +718,7 @@ Now you can use `nodetool status` to check the status of Cassandra:
 * run :
 
 ```bash
-kubectl exec -it ${APP_INSTANCE_NAME}-dc1-default-sts-0 -c cassandra --namespace "$NAMESPACE" -- nodetool -u <k8ssandra-username> -pw <k8ssandra-password> status`.
+kubectl exec -it ${APP_INSTANCE_NAME}-dc1-default-sts-0 -c cassandra --namespace "$NAMESPACE" -- nodetool -u <k8ssandra-username> -pw <k8ssandra-password> status
 ```
 
 Be sure to replace `<k8ssandra-username>` and `<k8ssandra-password>` with the username and password you retrieved and saved during the previous step.
