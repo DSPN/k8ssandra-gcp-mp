@@ -87,6 +87,7 @@ Choose an instance name, namespace, and default storage class for the app. In mo
 export APP_INSTANCE_NAME=k8ssandra-mp
 export NAMESPACE=default
 export DEFAULT_STORAGE_CLASS=k8ssandra-storage
+export DC_SIZE=3
 ```
 
 Set up the image registry, repository, and tag:
@@ -626,6 +627,7 @@ helm template "${APP_INSTANCE_NAME}" chart/k8ssandra-mp \
     --set k8ssandra.kube-prometheus-stack.enabled="true" \
     --set k8ssandra.stargate.livenessInitialDelaySeconds="240" \
     --set k8ssandra.stargate.readinessInitialDelaySeconds="240" \
+    --set k8ssandra.cassandra.datacenters[0].size="$DC_SIZE" \
     > "${APP_INSTANCE_NAME}_manifest.yaml"
 ```
 
@@ -667,6 +669,52 @@ kubectl apply -f "${APP_INSTANCE_NAME}_manifest.yaml" \
     --namespace "${NAMESPACE}" \
     --selector excluded-resource=no,is-crd=no
 ```
+
+#### Wait for the Application components to become available
+
+It will take about 10 minutes for all the components of k8ssandra to become fully available and ready to use. You can follow the status of the install process with the following command:
+
+```bash
+watch kubectl get pods --namespace "$NAMESPACE"
+```
+
+When you see the stargate pod show 1/1 READY the application has been fully provisioned and is ready for use.
+
+#### View the app in the Google Cloud Console
+
+To get the GCP Console URL for your app, run the following command:
+
+```bash
+echo "https://console.cloud.google.com/kubernetes/application/${ZONE}/${CLUSTER}/${NAMESPACE}/${APP_INSTANCE_NAME}"
+```
+
+#### Check the status of Cassandra
+
+To be able to use Cassandra utilities you first need to retrieve the credentials for the Cassandra superuser. You can do that as follows:
+
+username:
+```bash
+kubectl get secret ${APP_INSTANCE_NAME}-superuser -o jsonpath="{.data.username}" --namespace "$NAMESPACE" | base64 --decode ; echo
+```
+
+password:
+```bash
+kubectl get secret ${APP_INSTANCE_NAME}-superuser -o jsonpath="{.data.password}" --namespace "$NAMESPACE" | base64 --decode ; echo
+```
+
+Save both the username and password for future operations on the Cassandra cluster.
+
+Now you can use `nodetool status` to check the status of Cassandra:
+
+* Get a list of the pods with `kubectl get pods --namespace "$NAMESPACE"`
+* Note: the k8ssandra pod running Cassandra takes the form `<k8ssandra-cluster-name>-<datacenter-name>-default-sts-<n>`
+* run `kubectl exec -it ${APP_INSTANCE_NAME}-dc1-default-sts-0 -c cassandra --namespace "$NAMESPACE" -- nodetool -u <k8ssandra-username> -p <k8ssandra-password> status`. Be sure to replace `<k8ssandra-username>` and `<k8ssandra-password>` with the username and password you retrieved and saved during the previous step.
+
+For more operations please see the official k8ssandra getting started docs:
+
+[Site Reliability Engineers](https://docs.k8ssandra.io/quickstarts/site-reliability-engineer/)
+
+[Developers](https://docs.k8ssandra.io/quickstarts/developer/)
 
 # Uninstall the Application
 
