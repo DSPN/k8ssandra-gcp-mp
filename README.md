@@ -715,7 +715,13 @@ Now you can use `nodetool status` to check the status of Cassandra:
 
 * Get a list of the pods with `kubectl get pods --namespace "$NAMESPACE"`
 * Note: the k8ssandra pod running Cassandra takes the form `<k8ssandra-cluster-name>-<datacenter-name>-default-sts-<n>`
-* run `kubectl exec -it ${APP_INSTANCE_NAME}-dc1-default-sts-0 -c cassandra --namespace "$NAMESPACE" -- nodetool -u <k8ssandra-username> -p <k8ssandra-password> status`. Be sure to replace `<k8ssandra-username>` and `<k8ssandra-password>` with the username and password you retrieved and saved during the previous step.
+* run :
+
+```bash
+kubectl exec -it ${APP_INSTANCE_NAME}-dc1-default-sts-0 -c cassandra --namespace "$NAMESPACE" -- nodetool -u <k8ssandra-username> -pw <k8ssandra-password> status`.
+```
+
+Be sure to replace `<k8ssandra-username>` and `<k8ssandra-password>` with the username and password you retrieved and saved during the previous step.
 
 For more operations please see the official k8ssandra getting started docs:
 
