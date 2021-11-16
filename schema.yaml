@@ -339,17 +339,17 @@ properties:
 
   # It looks like this syntax is not currently supported, so may need
   # some custom parsing magic in the deployer image.
-  #k8ssandra.cassandra.datacenters[0].size:
-  #  type: integer
-  #  default: 4
-  #  description: size of the datacenter
+  k8ssandra.cassandra.datacenters[0].size:
+    type: integer
+    default: 4
+    description: size of the datacenter
 
-    #k8ssandra.cassandra.datacenters[0].name:
-    #type: string
-    #x-google-marketplace:
-    #  type: STRING
-    #default: dc1
-    #description: name of the datacenter
+  k8ssandra.cassandra.datacenters[0].name:
+    type: string
+    x-google-marketplace:
+      type: STRING
+    default: dc1
+    description: name of the datacenter
 
 required:
   - name
