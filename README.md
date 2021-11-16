@@ -701,12 +701,14 @@ To be able to use Cassandra utilities you first need to retrieve the credentials
 
 username:
 ```bash
-kubectl get secret ${APP_INSTANCE_NAME}-superuser -o jsonpath="{.data.username}" --namespace "$NAMESPACE" | base64 --decode ; echo
+export CASS_USER=$(kubectl get secret ${APP_INSTANCE_NAME}-superuser -o jsonpath="{.data.username}" --namespace "$NAMESPACE" | base64 --decode ; echo)
+echo $CASS_USER
 ```
 
 password:
 ```bash
-kubectl get secret ${APP_INSTANCE_NAME}-superuser -o jsonpath="{.data.password}" --namespace "$NAMESPACE" | base64 --decode ; echo
+export CASS_PASS=$(kubectl get secret ${APP_INSTANCE_NAME}-superuser -o jsonpath="{.data.password}" --namespace "$NAMESPACE" | base64 --decode ; echo)
+echo $CASS_PASS
 ```
 
 Save both the username and password for future operations on the Cassandra cluster.
@@ -718,10 +720,8 @@ Now you can use `nodetool status` to check the status of Cassandra:
 * run :
 
 ```bash
-kubectl exec -it ${APP_INSTANCE_NAME}-dc1-default-sts-0 -c cassandra --namespace "$NAMESPACE" -- nodetool -u <k8ssandra-username> -pw <k8ssandra-password> status
+kubectl exec -it ${APP_INSTANCE_NAME}-dc1-default-sts-0 -c cassandra --namespace "$NAMESPACE" -- nodetool -u $CASS_USER -pw $CASS_PASS status
 ```
-
-Be sure to replace `<k8ssandra-username>` and `<k8ssandra-password>` with the username and password you retrieved and saved during the previous step.
 
 For more operations please see the official k8ssandra getting started docs:
 
