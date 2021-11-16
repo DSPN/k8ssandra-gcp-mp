@@ -34,8 +34,12 @@ Create a new cluster from the command line:
 
 ```bash
 export CLUSTER=k8ssandra-mp-cluster
+export CLUSTER_SIZE=4
 export ZONE=us-central1-a
-gcloud container clusters create "${CLUSTER}" --zone "$ZONE" --machine-type e2-standard-2
+gcloud container clusters create "${CLUSTER}" \
+    --zone "$ZONE" \
+    --machine-type e2-standard-2 \
+    --num-nodes "$CLUSTER_SIZE"
 ```
 
 Configure kubectl to connect to the cluster:
@@ -621,13 +625,14 @@ helm template "${APP_INSTANCE_NAME}" chart/k8ssandra-mp \
     --set k8ssandra.cassandra.resources.requests.memory="2Gi" \
     --set k8ssandra.cassandra.resources.limits.cpu="1000m" \
     --set k8ssandra.cassandra.resources.limits.memory="2Gi" \
+    --set k8ssandra.cassandra.datacenters[0].name=dc1 \
+    --set k8ssandra.cassandra.datacenters[0].size="$DC_SIZE" \
     --set k8ssandra.reaper.enabled="true" \
     --set k8ssandra.reaper-operator.enabled="true" \
     --set k8ssandra.stargate.enabled="true" \
     --set k8ssandra.kube-prometheus-stack.enabled="true" \
     --set k8ssandra.stargate.livenessInitialDelaySeconds="240" \
     --set k8ssandra.stargate.readinessInitialDelaySeconds="240" \
-    --set k8ssandra.cassandra.datacenters[0].size="$DC_SIZE" \
     > "${APP_INSTANCE_NAME}_manifest.yaml"
 ```
 
