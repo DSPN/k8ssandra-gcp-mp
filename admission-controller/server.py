@@ -64,16 +64,10 @@ def get_cassandra_datacenters(namespace):
         dcs.append(dc['metadata']['name'])
     return dcs
 
-def remove_cass_operator_deployment(app_name, namespace):
+def remove_deployment(deployment, app_name, namespace):
     config.load_incluster_config()
     apps_api = client.AppsV1Api()
-    name = "{}-cass-operator".format(app_name, namespace)
-    apps_api.delete_namespaced_deployment(name, namespace, propagation_policy="Background")
-
-def remove_admission_controller_deployment(app_name, namespace):
-    config.load_incluster_config()
-    apps_api = client.AppsV1Api()
-    name = "{}-admission-controller-datastax".format(app_name, namespace)
+    name = "{}-{}".format(app_name, deployment)
     apps_api.delete_namespaced_deployment(name, namespace, propagation_policy="Background")
 
 @admission_controller.route('/validate/applications', methods=['POST'])
@@ -88,7 +82,7 @@ def deployment_webhook():
         # We need to remove the cass-operator deployment first
         # before we remove the finalizer or it will restore
         # it.
-        remove_cass_operator_deployment(name, namespace)
+        remove_deployment('cass-operator', name, namespace)
         time.sleep(5)
 
         cassandra_datacenters = get_cassandra_datacenters(namespace)
@@ -97,7 +91,7 @@ def deployment_webhook():
             remove_finalizer(namespace, dc)
 
         time.sleep(5)
-        remove_admission_controller_deployment(name, namespace)
+        remove_deployment('admission-controller-datastax', name, namespace)
     except Exception as e:
         admission_controller.logger.error(e)
 
