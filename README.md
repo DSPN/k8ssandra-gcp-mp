@@ -683,6 +683,25 @@ It will take about 10 minutes for all the components of k8ssandra to become full
 watch kubectl get pods --namespace "$NAMESPACE"
 ```
 
+OUTPUT:
+
+```
+NAME                                                   READY   STATUS      RESTARTS   AGE
+k8ssandra-mp-cass-operator-db4b9b67f-pfkd2             1/1     Running     0          27m
+k8ssandra-mp-dc1-default-sts-0                         2/2     Running     0          26m
+k8ssandra-mp-dc1-default-sts-1                         2/2     Running     0          26m
+k8ssandra-mp-dc1-default-sts-2                         2/2     Running     0          26m
+k8ssandra-mp-dc1-default-sts-3                         2/2     Running     0          26m
+k8ssandra-mp-dc1-stargate-5d758d7499-4n8fz             1/1     Running     0          27m
+k8ssandra-mp-grafana-6c9f769d6-t7khk                   2/2     Running     0          27m
+k8ssandra-mp-kube-promethe-admission-create-xpg5b      0/1     Completed   0          27m
+k8ssandra-mp-kube-promethe-admission-patch-brc7d       0/1     Completed   2          27m
+k8ssandra-mp-kube-promethe-operator-7b4b746869-fhtwk   1/1     Running     0          27m
+k8ssandra-mp-reaper-7d8c47fcd4-l4rbr                   1/1     Running     0          20m
+k8ssandra-mp-reaper-operator-5c6589c7c9-np2c6          1/1     Running     0          27m
+prometheus-k8ssandra-mp-kube-promethe-prometheus-0     2/2     Running     1          26m
+```
+
 When you see the stargate pod show 1/1 READY the application has been fully provisioned and is ready for use.
 
 #### View the app in the Google Cloud Console
@@ -721,6 +740,20 @@ Now you can use `nodetool status` to check the status of Cassandra:
 
 ```bash
 kubectl exec -it ${APP_INSTANCE_NAME}-dc1-default-sts-0 -c cassandra --namespace "$NAMESPACE" -- nodetool -u $CASS_USER -pw $CASS_PASS status
+```
+
+example output:
+
+```
+Datacenter: dc1
+===============
+Status=Up/Down
+|/ State=Normal/Leaving/Joining/Moving
+--  Address     Load       Tokens       Owns    Host ID                               Rack
+UN  10.36.3.6   259.63 KiB  256          ?       d61b86a4-4484-44cb-958f-cb343a4c61a4  default
+UN  10.36.2.6   251.37 KiB  256          ?       b772b997-7e28-479e-822f-78020cc9821b  default
+UN  10.36.0.6   314.41 KiB  256          ?       d0473406-2872-461f-ab56-aeeebde2551a  default
+UN  10.36.1.11  239.61 KiB  256          ?       b4396a21-bd14-49e7-b629-a50fe96929bc  default
 ```
 
 For more operations please see the official k8ssandra getting started docs:
