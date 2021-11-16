@@ -337,8 +337,9 @@ properties:
     default: "10Gi"
     description: size of the storage volume for Cassandra
 
-  # It looks like this syntax is not currently supported, so may need
-  # some custom parsing magic in the deployer image.
+  # This syntax is not supported by GCP Marketplace out of the box, so
+  # added some custom parsing magic in the deployer image.
+  # see files/parse_cassandra_datacenters.py.
   k8ssandra.cassandra.datacenters[0].size:
     type: integer
     default: 4
