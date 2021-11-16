@@ -688,6 +688,8 @@ To get the GCP Console URL for your app, run the following command:
 echo "https://console.cloud.google.com/kubernetes/application/${ZONE}/${CLUSTER}/${NAMESPACE}/${APP_INSTANCE_NAME}"
 ```
 
+To view the app, open the URL in your browser.
+
 #### Check the status of Cassandra
 
 To be able to use Cassandra utilities you first need to retrieve the credentials for the Cassandra superuser. You can do that as follows:
