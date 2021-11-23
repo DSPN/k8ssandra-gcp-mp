@@ -98,7 +98,7 @@ Set up the image registry, repository, and tag:
 
 ```bash
 export REGISTRY="gcr.io"
-export REPOSITORY="gke-launcher-dev/k8ssandra-mp"
+export REPOSITORY="datastax-public/k8ssandra-mp"
 export TAG="1.0"
 ```
 
