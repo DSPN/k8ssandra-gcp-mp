@@ -3,11 +3,11 @@ name: k8ssandra-mp
 description: |
   Wrapper of k8ssandra for Google Marketplace.
 type: application
-version: 1.0.0
+version: 1.4.1
 
 dependencies:
   - name: k8ssandra
-    version: 1.3.1
+    version: 1.4.1
     repository: https://helm.k8ssandra.io/stable
 
 deprecated: false

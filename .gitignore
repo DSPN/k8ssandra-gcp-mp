@@ -128,4 +128,8 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+# Vim
+*.swp
+*.swo
+
 /chart/k8ssandra-mp/charts

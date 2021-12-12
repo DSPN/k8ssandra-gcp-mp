@@ -1,6 +1,6 @@
 k8ssandra:
   cassandra:
-    version: "3.11.10"
+    version: "4.0.1"
     cassandraLibDirVolume:
       storageClass: k8ssandra-storage
       size: 1Gi
