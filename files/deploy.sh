@@ -69,9 +69,14 @@ kustomize build /data/manifest-expanded > /data/manifest-expanded/chart-kustomiz
 CHART_FILE_NAME=chart-kustomized.yaml envsubst \
     < /app/excluded_resources_kustomize.yaml \
     > /data/manifest-expanded/kustomization.yaml
+kustomize build /data/manifest-expanded > /data/manifest-expanded/chart-kustomized2.yaml
+
+CHART_FILE_NAME=chart-kustomized2.yaml envsubst \
+    < /app/crds_kustomize.yaml \
+    > /data/manifest-expanded/kustomization.yaml
 kustomize build /data/manifest-expanded > /data/manifest-expanded/chart.yaml
 
-rm /data/manifest-expanded/{kustomization,chart-kustomized}.yaml
+rm /data/manifest-expanded/{kustomization,chart-kustomized,chart-kustomized2}.yaml
 
 # Add admission-controller resources
 openssl req -x509 \
@@ -108,14 +113,26 @@ validate_app_resource.py --manifests "/data/resources.yaml"
   --status "Pending"
 
 # Apply the manifest.
-kubectl apply --namespace="$NAMESPACE" --filename="/data/resources.yaml" -l excluded-resource=no || true
+kubectl create --namespace="$NAMESPACE" \
+               --filename="/data/resources.yaml" \
+               --selector is-crd=yes || true
 
 # wait for CRDS to be created.
 # TODO: use something like kubectl wait --for condition=established --timeout=120s instead of hard coding a timeout here.
-sleep 60
+sleep 10
 
 # Apply a second time due to: https://github.com/kubernetes/kubectl/issues/1117
-kubectl apply --namespace="$NAMESPACE" --filename="/data/resources.yaml" -l excluded-resource=no
+kubectl create --namespace="$NAMESPACE" \
+               --filename="/data/resources.yaml" \
+               --selector is-crd=yes || true
+
+# Give enough time for the crds to become available.
+sleep 60
+
+# Now apply the other non crd resources.
+kubectl apply  --namespace="$NAMESPACE" \
+               --filename="/data/resources.yaml" \
+               --selector is-crd=no,excluded-resource=no
 
 # Apply the admission-controller resource:
 kubectl apply --namespace="$NAMESPACE" --filename="/app/admission-controller.yaml"

@@ -57,28 +57,6 @@ class ImageFinder:
                 break
         return count
 
-    def render_template(self):
-        cp = helpers.run(
-            f"""
-            helm template k8ssandra-mp {helpers.tools_dir}/../chart/k8ssandra-mp \
-                --set k8ssandra.reaper.enabled=true \
-                --set k8ssandra.reaper-operator.enabled=true \
-                --set k8ssandra.stargate.enabled=true \
-                --set k8ssandra.kube-prometheus-stack.enabled=true \
-                --set k8ssandra.medusa.enabled=true
-            """
-            )
-
-        if cp.returncode != 0:
-            raise Exception(
-                f"""
-                Failed to render chart template:
-                {cp.stdout}
-                """
-                )
-
-        return cp.stdout
-
     class NotApplicableError(Exception):pass
     def extract_image(self, line, delim=':'):
         chars = ' \t"\''
@@ -124,7 +102,7 @@ class ImageFinder:
         self.images = set()
 
     def find(self):
-        template = self.render_template()
+        template = helpers.render_template()
         self.find_images(template)
         return sorted(self.images)
 

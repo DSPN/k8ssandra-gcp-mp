@@ -26,6 +26,8 @@ k8ssandra:
     enabled: true
   stargate:
     enabled: true
+    livenessInitialDelaySeconds: "240"
+    readinessInitialDelaySeconds: "240"
   kube-prometheus-stack:
     enabled: true
 

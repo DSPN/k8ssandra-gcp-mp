@@ -13,6 +13,7 @@ x-google-marketplace:
     recommended: true
   
   images:
+
     cassandra:
       properties:
         k8ssandra.cassandra.image.registry:
@@ -21,7 +22,8 @@ x-google-marketplace:
           type: REPO_WITHOUT_REGISTRY
         k8ssandra.cassandra.image.tag:
           type: TAG
-    cassconfigbuilder:
+
+    cassandra-config-builder:
       properties:
         k8ssandra.cassandra.configBuilder.image.registry:
           type: REGISTRY
@@ -29,7 +31,8 @@ x-google-marketplace:
           type: REPO_WITHOUT_REGISTRY
         k8ssandra.cassandra.configBuilder.image.tag:
           type: TAG
-    jmxcredentialsconfig:
+
+    cassandra-jmx-credentials:
       properties:
         k8ssandra.cassandra.jmxCredentialsConfig.image.registry:
           type: REGISTRY
@@ -37,7 +40,8 @@ x-google-marketplace:
           type: REPO_WITHOUT_REGISTRY
         k8ssandra.cassandra.jmxCredentialsConfig.image.tag:
           type: TAG
-    loggingsidecar:
+
+    cassandra-system-logger:
       properties:
         k8ssandra.cassandra.loggingSidecar.image.registry:
           type: REGISTRY
@@ -45,6 +49,7 @@ x-google-marketplace:
           type: REPO_WITHOUT_REGISTRY
         k8ssandra.cassandra.loggingSidecar.image.tag:
           type: TAG
+
     stargate:
       properties:
         k8ssandra.stargate.image.registry:
@@ -53,7 +58,8 @@ x-google-marketplace:
           type: REPO_WITHOUT_REGISTRY
         k8ssandra.stargate.image.tag:
           type: TAG
-    waitforcassandra:
+
+    stargate-wait-for-cassandra:
       properties:
         k8ssandra.stargate.waitForCassandra.image.registry:
           type: REGISTRY
@@ -61,6 +67,7 @@ x-google-marketplace:
           type: REPO_WITHOUT_REGISTRY
         k8ssandra.stargate.waitForCassandra.image.tag:
           type: TAG
+
     reaper:
       properties:
         k8ssandra.reaper.image.registry:
@@ -69,6 +76,7 @@ x-google-marketplace:
           type: REPO_WITHOUT_REGISTRY
         k8ssandra.reaper.image.tag:
           type: TAG
+
     medusa:
       properties:
         k8ssandra.medusa.image.registry:
@@ -77,6 +85,7 @@ x-google-marketplace:
           type: REPO_WITHOUT_REGISTRY
         k8ssandra.medusa.image.tag:
           type: TAG
+
     cleaner:
       properties:
         k8ssandra.cleaner.image.registry:
@@ -85,14 +94,7 @@ x-google-marketplace:
           type: REPO_WITHOUT_REGISTRY
         k8ssandra.cleaner.image.tag:
           type: TAG
-    client:
-      properties:
-        k8ssandra.client.image.registry:
-          type: REGISTRY
-        k8ssandra.client.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.client.image.tag:
-          type: TAG
+
     cass-operator:
       properties:
         k8ssandra.cass-operator.image.registry:
@@ -101,7 +103,8 @@ x-google-marketplace:
           type: REPO_WITHOUT_REGISTRY
         k8ssandra.cass-operator.image.tag:
           type: TAG
-    reaperoperator:
+
+    reaper-operator:
       properties:
         k8ssandra.reaper-operator.image.registry:
           type: REGISTRY
@@ -109,7 +112,8 @@ x-google-marketplace:
           type: REPO_WITHOUT_REGISTRY
         k8ssandra.reaper-operator.image.tag:
           type: TAG
-    medusaoperator:
+
+    medusa-operator:
       properties:
         k8ssandra.medusa-operator.image.registry:
           type: REGISTRY
@@ -117,7 +121,8 @@ x-google-marketplace:
           type: REPO_WITHOUT_REGISTRY
         k8ssandra.medusa-operator.image.tag:
           type: TAG
-    prometheusoperator:
+
+    prometheus-operator:
       properties:
         k8ssandra.kube-prometheus-stack.prometheus-operator.image.registry:
           type: REGISTRY
@@ -125,7 +130,8 @@ x-google-marketplace:
           type: REPO_WITHOUT_REGISTRY
         k8ssandra.kube-prometheus-stack.prometheus-operator.image.tag:
           type: TAG
-    prometheusspec:
+
+    prometheus:
       properties:
         k8ssandra.kube-prometheus-stack.prometheus-operator.prometheusSpec.image.registry:
           type: REGISTRY
@@ -133,6 +139,7 @@ x-google-marketplace:
           type: REPO_WITHOUT_REGISTRY
         k8ssandra.kube-prometheus-stack.prometheus-operator.prometheusSpec.image.tag:
           type: TAG
+
     grafana:
       properties:
         k8ssandra.grafana.image.registry:
@@ -141,23 +148,12 @@ x-google-marketplace:
           type: REPO_WITHOUT_REGISTRY
         k8ssandra.grafana.image.tag:
           type: TAG
-    initchowndata:
-      properties:
-        k8ssandra.kube-prometheus-stack.grafana.initChownData.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.kube-prometheus-stack.grafana.initChownData.image.tag:
-          type: TAG
-    grafanasidecar:
+
+    grafana-sidecar:
       properties:
         k8ssandra.kube-prometheus-stack.grafana.sidecar.image.repository:
           type: REPO_WITH_REGISTRY
         k8ssandra.kube-prometheus-stack.grafana.sidecar.image.tag:
-          type: TAG
-    grafanaimagerenderer:
-      properties:
-        k8ssandra.kube-prometheus-stack.grafana.imageRenderer.image.repository:
-          type: REPO_WITH_REGISTRY
-        k8ssandra.kube-prometheus-stack.grafana.imageRenderer.image.tag:
           type: TAG
 
   deployerServiceAccount:
@@ -206,6 +202,15 @@ properties:
         description: >
           service account used for the cass-operator component of k8ssandra
         roles:
+          - type: Role
+            rulesType: CUSTOM
+            rules:
+              - apiGroups: ['', 'coordination.k8s.io']
+                resources: ['configmaps', 'leases']
+                verbs: ['get', 'list', 'watch', 'create', 'update', 'patch', 'delete']
+              - apiGroups: ['']
+                resources: ['events']
+                verbs: ['create', 'patch']
           - type: Role
             rulesType: CUSTOM
             rules:
@@ -342,7 +347,7 @@ properties:
   # see files/parse_cassandra_datacenters.py.
   k8ssandra.cassandra.datacenters[0].size:
     type: integer
-    default: 4
+    default: 3
     description: size of the datacenter
 
   k8ssandra.cassandra.datacenters[0].name:

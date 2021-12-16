@@ -7,6 +7,7 @@ COPY files/parse_cassandra_dcs.py /bin/
 COPY files/admission-controller.yaml /app/
 COPY files/labels_and_service_accounts_kustomize.yaml /app/
 COPY files/excluded_resources_kustomize.yaml /app/
+COPY files/crds_kustomize.yaml /app/
 
 RUN /bin/bash -c 'chmod u+x /bin/print_config.py'
 RUN /bin/bash -c 'curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash; \
