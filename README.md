@@ -99,32 +99,31 @@ Set up the image registry, repository, and tag:
 ```bash
 export REGISTRY="gcr.io"
 export REPOSITORY="datastax-public/k8ssandra-mp"
-export TAG="1.0"
+export TAG="1.3"
 ```
 
 Configure the container images:
 
 ```bash
-export IMAGE_BUSY_BOX="busybox"
 export IMAGE_CASS_OPERATOR="cass-operator"
 export IMAGE_CASSANDRA="cassandra"
-export IMAGE_CASSANDRA_CONFIG_BUILDER="cassconfigbuilder"
+export IMAGE_CASSANDRA_CONFIG_BUILDER="cassandra-config-builder"
+export IMAGE_CASSANDRA_JMX_CREDENTIALS="cassandra-jmx-credentials"
+export IMAGE_CASSANDRA_SYSTEM_LOGGER="cassandra-system-logger"
 export IMAGE_CLEANER="cleaner"
 export IMAGE_CLIENT="client"
 export IMAGE_GRAFANA="grafana"
-export IMAGE_GRAFANA_IMAGE_RENDERER="grafanaimagerenderer"
-export IMAGE_GRAFANA_SIDECAR="grafanasidecar"
-export IMAGE_INIT_CHOWN_DATA="initchowndata"
-export IMAGE_JMX_CREDENTIALS_CONFIG="jmxcredentialsconfig"
-export IMAGE_LOGGING_SIDECAR="loggingsidecar"
+export IMAGE_GRAFANA_SIDECAR="grafana-sidecar"
+export IMAGE_KUBE_PROMETHEUS_STACK_ADMISSION_PATCH_CERTGEN="kube-prometheus-stack-admission-patch-certgen"
 export IMAGE_MEDUSA="medusa"
-export IMAGE_MEDUSA_OPERATOR="medusaoperator"
-export IMAGE_PROMETHEUS_OPERATOR="prometheusoperator"
-export IMAGE_PROMETHEUS_SPEC="prometheusspec"
+export IMAGE_MEDUSA_OPERATOR="medusa-operator"
+export IMAGE_PROMETHEUS="prometheus"
+export IMAGE_PROMETHEUS_CONFIG_RELOADER="prometheus-config-reloader"
+export IMAGE_PROMETHEUS_OPERATOR="prometheus-operator"
 export IMAGE_REAPER="reaper"
-export IMAGE_REAPER_OPERATOR="reaperoperator"
+export IMAGE_REAPER_OPERATOR="reaper-operator"
 export IMAGE_STARGATE="stargate"
-export IMAGE_WAIT_FOR_CASSANDRA="waitforcassandra"
+export IMAGE_STARGATE_WAIT_FOR_CASSANDRA="stargate-wait-for-cassandra"
 ```
 
 #### Create a suitable storage class
@@ -568,16 +567,16 @@ helm template "${APP_INSTANCE_NAME}" chart/k8ssandra-mp \
     --set k8ssandra.cassandra.configBuilder.image.repository="${REPOSITORY}/${IMAGE_CASSANDRA_CONFIG_BUILDER}" \
     --set k8ssandra.cassandra.configBuilder.image.tag="${TAG}" \
     --set k8ssandra.cassandra.jmxCredentialsConfig.image.registry="${REGISTRY}" \
-    --set k8ssandra.cassandra.jmxCredentialsConfig.image.repository="${REPOSITORY}/${IMAGE_JMX_CREDENTIALS_CONFIG}" \
+    --set k8ssandra.cassandra.jmxCredentialsConfig.image.repository="${REPOSITORY}/${IMAGE_CASSANDRA_JMX_CREDENTIALS}" \
     --set k8ssandra.cassandra.jmxCredentialsConfig.image.tag="${TAG}" \
     --set k8ssandra.cassandra.loggingSidecar.image.registry="${REGISTRY}" \
-    --set k8ssandra.cassandra.loggingSidecar.image.repository="${REPOSITORY}/${IMAGE_LOGGING_SIDECAR}" \
+    --set k8ssandra.cassandra.loggingSidecar.image.repository="${REPOSITORY}/${IMAGE_CASSANDRA_SYSTEM_LOGGER}" \
     --set k8ssandra.cassandra.loggingSidecar.image.tag="${TAG}" \
     --set k8ssandra.stargate.image.registry="${REGISTRY}" \
     --set k8ssandra.stargate.image.repository="${REPOSITORY}/${IMAGE_STARGATE}" \
     --set k8ssandra.stargate.image.tag="${TAG}" \
     --set k8ssandra.stargate.waitForCassandra.image.registry="${REGISTRY}" \
-    --set k8ssandra.stargate.waitForCassandra.image.repository="${REPOSITORY}/${IMAGE_WAIT_FOR_CASSANDRA}" \
+    --set k8ssandra.stargate.waitForCassandra.image.repository="${REPOSITORY}/${IMAGE_STARGATE_WAIT_FOR_CASSANDRA}" \
     --set k8ssandra.stargate.waitForCassandra.image.tag="${TAG}" \
     --set k8ssandra.reaper.image.registry="${REGISTRY}" \
     --set k8ssandra.reaper.image.repository="${REPOSITORY}/${IMAGE_REAPER}" \
@@ -600,22 +599,18 @@ helm template "${APP_INSTANCE_NAME}" chart/k8ssandra-mp \
     --set k8ssandra.medusa-operator.image.registry="${REGISTRY}" \
     --set k8ssandra.medusa-operator.image.repository="${REPOSITORY}/${IMAGE_MEDUSA_OPERATOR}" \
     --set k8ssandra.medusa-operator.image.tag="${TAG}" \
-    --set k8ssandra.kube-prometheus-stack.prometheus-operator.image.registry="${REGISTRY}" \
-    --set k8ssandra.kube-prometheus-stack.prometheus-operator.image.repository="${REPOSITORY}/${IMAGE_PROMETHEUS_OPERATOR}" \
-    --set k8ssandra.kube-prometheus-stack.prometheus-operator.image.tag="${TAG}" \
-    --set k8ssandra.kube-prometheus-stack.prometheus-operator.prometheusSpec.image.registry="${REGISTRY}" \
-    --set k8ssandra.kube-prometheus-stack.prometheus-operator.prometheusSpec.image.repository="${REPOSITORY}/${IMAGE_PROMETHEUS_SPEC}" \
-    --set k8ssandra.kube-prometheus-stack.prometheus-operator.prometheusSpec.image.tag="${TAG}" \
-    --set k8ssandra.grafana.image.registry="${REGISTRY}" \
-    --set k8ssandra.grafana.image.repository="${REPOSITORY}/${IMAGE_GRAFANA}" \
-    --set k8ssandra.grafana.image.tag="${TAG}" \
-    --set k8ssandra.kube-prometheus-stack.grafana.initChownData.image.registry="${REGISTRY}" \
-    --set k8ssandra.kube-prometheus-stack.grafana.initChownData.image.repository="${REPOSITORY}/${IMAGE_INIT_CHOWN_DATA}" \
-    --set k8ssandra.kube-prometheus-stack.grafana.initChownData.image.tag="${TAG}" \
+    --set k8ssandra.kube-prometheus-stack.prometheus.prometheusSpec.image.repository="${REGISTRY}/${REPOSITORY}/${IMAGE_PROMETHEUS}" \
+    --set k8ssandra.kube-prometheus-stack.prometheus.prometheusSpec.image.tag="${TAG}" \
+    --set k8ssandra.kube-prometheus-stack.prometheusOperator.image.repository="${REGISTRY}/${REPOSITORY}/${IMAGE_PROMETHEUS_OPERATOR}" \
+    --set k8ssandra.kube-prometheus-stack.prometheusOperator.image.tag="${TAG}" \
+    --set k8ssandra.kube-prometheus-stack.prometheusOperator.prometheusConfigReloaderImage.repository="${REGISTRY}/${REPOSITORY}/${IMAGE_PROMETHEUS_CONFIG_RELOADER}" \
+    --set k8ssandra.kube-prometheus-stack.prometheusOperator.prometheusConfigReloaderImage.tag="${TAG}" \
+    --set k8ssandra.kube-prometheus-stack.prometheusOperator.admissionWebhooks.patch.image.repository="${REGISTRY}/${REPOSITORY}/${IMAGE_KUBE_PROMETHEUS_STACK_ADMISSION_PATCH_CERTGEN}" \
+    --set k8ssandra.kube-prometheus-stack.prometheusOperator.admissionWebhooks.patch.image.tag="${TAG}" \
+    --set k8ssandra.kube-prometheus-stack.grafana.image.repository="${REGISTRY}/${REPOSITORY}/${IMAGE_GRAFANA}" \
+    --set k8ssandra.kube-prometheus-stack.grafana.image.tag="${TAG}" \
     --set k8ssandra.kube-prometheus-stack.grafana.sidecar.image.repository="${REGISTRY}/${REPOSITORY}/${IMAGE_GRAFANA_SIDECAR}" \
     --set k8ssandra.kube-prometheus-stack.grafana.sidecar.image.tag="${TAG}" \
-    --set k8ssandra.kube-prometheus-stack.grafana.imageRenderer.image.repository="${REGISTRY}/${REPOSITORY}" \
-    --set k8ssandra.kube-prometheus-stack.grafana.imageRenderer.image.tag="${TAG}" \
     --set k8ssandra.cassandra.cassandraLibDirVolume.storageClass="${DEFAULT_STORAGE_CLASS}" \
     --set k8ssandra.cassandra.cassandraLibDirVolume.size="1Gi" \
     --set k8ssandra.cassandra.allowMultipleNodesPerWorker="true" \
@@ -625,8 +620,8 @@ helm template "${APP_INSTANCE_NAME}" chart/k8ssandra-mp \
     --set k8ssandra.cassandra.resources.requests.memory="2Gi" \
     --set k8ssandra.cassandra.resources.limits.cpu="1000m" \
     --set k8ssandra.cassandra.resources.limits.memory="2Gi" \
-    --set k8ssandra.cassandra.datacenters[0].name=dc1 \
-    --set k8ssandra.cassandra.datacenters[0].size="$DC_SIZE" \
+    --set k8ssandra.cassandra.datacenters\[0].name=dc1 \
+    --set k8ssandra.cassandra.datacenters\[0].size="$DC_SIZE" \
     --set k8ssandra.reaper.enabled="true" \
     --set k8ssandra.reaper-operator.enabled="true" \
     --set k8ssandra.stargate.enabled="true" \
