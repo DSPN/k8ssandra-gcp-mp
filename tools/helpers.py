@@ -4,11 +4,12 @@ import subprocess
 import yaml
 
 valid_versions = [
-    "1.4.1"
+    "1.3.1"
 ]
 
 application_name = 'k8ssandra-mp'
 dev_staging_repo = f"gcr.io/gke-launcher-dev/{application_name}"
+prod_staging_repo = f"gcr.io/datastax-public/{application_name}"
 tools_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)))
 
 def run(command):

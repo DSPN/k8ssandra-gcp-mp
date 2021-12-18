@@ -13,7 +13,7 @@ metadata:
 spec:
   descriptor:
     type: K8ssandra-mp
-    version: "1.4.1"
+    version: "1.3.1"
   selector:
     matchLabels:
       app.kubernetes.io/name: "{{ .Release.Name }}"

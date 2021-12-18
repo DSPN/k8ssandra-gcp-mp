@@ -113,18 +113,18 @@ validate_app_resource.py --manifests "/data/resources.yaml"
   --status "Pending"
 
 # Apply the manifest.
-kubectl create --namespace="$NAMESPACE" \
-               --filename="/data/resources.yaml" \
-               --selector is-crd=yes || true
+kubectl apply --namespace="$NAMESPACE" \
+              --filename="/data/resources.yaml" \
+              --selector is-crd=yes || true
 
 # wait for CRDS to be created.
 # TODO: use something like kubectl wait --for condition=established --timeout=120s instead of hard coding a timeout here.
 sleep 10
 
 # Apply a second time due to: https://github.com/kubernetes/kubectl/issues/1117
-kubectl create --namespace="$NAMESPACE" \
-               --filename="/data/resources.yaml" \
-               --selector is-crd=yes || true
+kubectl apply --namespace="$NAMESPACE" \
+              --filename="/data/resources.yaml" \
+              --selector is-crd=yes || true
 
 # Give enough time for the crds to become available.
 sleep 60

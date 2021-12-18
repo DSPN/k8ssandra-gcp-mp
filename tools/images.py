@@ -10,34 +10,32 @@ valid_operations = (
     'pull',
     'tag',
     'push',
-    'remove'
+    'remove',
+    'publish',
 )
 
 image_map = {
     'stargate-wait-for-cassandra': 'alpine:3.12.2',
     'cassandra-jmx-credentials': 'busybox:1.33.1',
-    'grafana-test': 'bats/bats:v1.4.1',
+    'grafana-test': 'bats/bats:v1.1.0',
     'cassandra-config-builder': 'datastax/cass-config-builder:1.0.4',
-    'cass-operator-manager-config-builder': 'datastax/cass-config-builder:1.0.4-ubi7',
-    'grafana': 'grafana/grafana:7.5.11',
-    'cassandra': 'k8ssandra/cass-management-api:4.0.1-v0.1.33',
-    'cass-operator': 'k8ssandra/cass-operator:v1.9.0',
+    'grafana': 'grafana/grafana:7.3.5',
+    'cassandra': 'k8ssandra/cass-management-api:4.0.0-v0.1.28',
+    'cass-operator': 'k8ssandra/cass-operator:v1.7.1',
     'cleaner': 'k8ssandra/k8ssandra-tools:latest',
     'crd-upgrader': 'k8ssandra/k8ssandra-tools:latest',
-    'reaper-operator': 'k8ssandra/reaper-operator:v0.3.5',
-    'cassandra-system-logger': 'k8ssandra/system-logger:6c64f9c4',
-    'cass-operator-manager-system-logger': 'k8ssandra/system-logger:v1.9.0',
-    'medusa-operator': 'k8ssandra/medusa-operator:v0.4.0',
-    'medusa': 'k8ssandra/medusa:0.11.3',
-    'stargate': 'stargateio/stargate-4_0:v1.0.40',
-    'reaper': 'thelastpickle/cassandra-reaper:3.0.0',
-    'kube-prometheus-stack-admission-create-certgen': 'k8s.gcr.io/ingress-nginx/kube-webhook-certgen:v1.0@sha256:f3b6b39a6062328c095337b4cadcefd1612348fdd5190b1dcbcb9b9e90bd8068',
-    'kube-prometheus-stack-admission-patch-certgen': 'k8s.gcr.io/ingress-nginx/kube-webhook-certgen:v1.0@sha256:f3b6b39a6062328c095337b4cadcefd1612348fdd5190b1dcbcb9b9e90bd8068',
-    'grafana-sidecar': 'quay.io/kiwigrid/k8s-sidecar:1.14.2',
-    'prometheus-config-reloader': 'quay.io/prometheus-operator/prometheus-config-reloader:v0.52.0',
-    'prometheus-operator': 'quay.io/prometheus-operator/prometheus-operator:v0.52.0',
-    'prometheus': 'quay.io/prometheus/prometheus:v2.28.1',
-    'thanos': 'quay.io/thanos/thanos:v0.17.2',
+    'reaper-operator': 'k8ssandra/reaper-operator:v0.3.3',
+    'cassandra-system-logger': 'k8ssandra/system-logger:9c4c3692',
+    'medusa-operator': 'k8ssandra/medusa-operator:v0.3.3',
+    'medusa': 'k8ssandra/medusa:0.11.0',
+    'stargate': 'stargateio/stargate-4_0:v1.0.29',
+    'reaper': 'thelastpickle/cassandra-reaper:2.3.1',
+    'kube-prometheus-stack-admission-create-certgen': 'jettech/kube-webhook-certgen:v1.5.0',
+    'kube-prometheus-stack-admission-patch-certgen': 'jettech/kube-webhook-certgen:v1.5.0',
+    'grafana-sidecar': 'kiwigrid/k8s-sidecar:1.1.0',
+    'prometheus-config-reloader': 'quay.io/prometheus-operator/prometheus-config-reloader:v0.44.0',
+    'prometheus-operator': 'quay.io/prometheus-operator/prometheus-operator:v0.44.0',
+    'prometheus': 'quay.io/prometheus/prometheus:v2.22.1',
 }
 
 class ImageFinder:
@@ -165,6 +163,45 @@ class ImagePusher:
                     )
 
 
+class ImagePublisher:
+
+    def publish(self, version):
+        short_version = helpers.get_short_version(version)
+        items = dict(image_map)
+        items['deployer'] = 'deployer'
+        for name in items.keys():
+            dev_staging_name = f"{helpers.dev_staging_repo}/{name}"
+            prod_staging_name = f"{helpers.prod_staging_repo}/{name}"
+            print(f"creating tag. Source: '{dev_staging_name}', Dest: '{prod_staging_name}'")
+            cp = helpers.run(
+                f"""
+                docker tag {dev_staging_name}:{version} {prod_staging_name}:{version}
+                docker tag {dev_staging_name}:{version} {prod_staging_name}:{short_version}
+                """
+                )
+            if cp.returncode != 0:
+                raise Exception(
+                    f"""
+                    Failed to tag image '{name}'
+                    {cp.stdout}
+                    """
+                    )
+            print(f"pushing image versions for '{name}'")
+            cp = helpers.run(
+                f"""
+                docker push {prod_staging_name}:{version}
+                docker push {prod_staging_name}:{short_version}
+                """
+                )
+            if cp.returncode != 0:
+                raise Exception(
+                    f"""
+                    Failed to push image '{name}'
+                    {cp.stdout}
+                    """
+                    )
+
+
 class ImageRemover:
 
     def remove(self, version):
@@ -217,6 +254,13 @@ def main():
             sys.exit(1)
         version = args.version
         ImageRemover().remove(version)
+
+    if args.operation == 'publish':
+        if not args.version:
+            print("<version is required for the 'publish' operation")
+            sys.exit(1)
+        version = args.version
+        ImagePublisher().publish(version)
 
 if __name__ == '__main__':
     main()
