@@ -34,7 +34,7 @@ Create a new cluster from the command line:
 
 ```bash
 export CLUSTER=k8ssandra-mp-cluster
-export CLUSTER_SIZE=4
+export CLUSTER_SIZE=3
 export ZONE=us-central1-a
 gcloud container clusters create "${CLUSTER}" \
     --zone "$ZONE" \
