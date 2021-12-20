@@ -672,7 +672,7 @@ kubectl apply -f "${APP_INSTANCE_NAME}_manifest.yaml" \
 
 #### Wait for the Application components to become available
 
-It will take about 10 minutes for all the components of k8ssandra to become fully available and ready to use. You can follow the status of the install process with the following command:
+It will take about 10 or 15 minutes for all the components of k8ssandra to become fully available and ready to use. You can follow the status of the install process with the following command:
 
 ```bash
 watch kubectl get pods --namespace "$NAMESPACE"

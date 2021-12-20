@@ -55,3 +55,8 @@ CHART_FILE_NAME=chart-kustomized2.yaml NAME="${app_instance_name}" envsubst \
     > ./kustomization.yaml
 kustomize build . > "${script_dir}"/../"${chart_file_name}"
 
+# Remove unneeded version strings
+
+sed -i '' 's|^ *version: 1\.3$||g' "${script_dir}"/../"${chart_file_name}"
+sed -i '' 's|^ *app.kubernetes\.io/version: "1\.3".*$||g' "${script_dir}"/../"${chart_file_name}"
+
