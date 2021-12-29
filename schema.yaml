@@ -95,6 +95,15 @@ x-google-marketplace:
         k8ssandra.cleaner.image.tag:
           type: TAG
 
+    client:
+      properties:
+        k8ssandra.client.image.registry:
+          type: REGISTRY
+        k8ssandra.client.image.repository:
+          type: REPO_WITHOUT_REGISTRY
+        k8ssandra.client.image.tag:
+          type: TAG
+
     cass-operator:
       properties:
         k8ssandra.cass-operator.image.registry:
@@ -133,20 +142,30 @@ x-google-marketplace:
 
     prometheus:
       properties:
-        k8ssandra.kube-prometheus-stack.prometheus-operator.prometheusSpec.image.registry:
-          type: REGISTRY
-        k8ssandra.kube-prometheus-stack.prometheus-operator.prometheusSpec.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.kube-prometheus-stack.prometheus-operator.prometheusSpec.image.tag:
+        k8ssandra.kube-prometheus-stack.prometheus.prometheusSpec.image.repository:
+          type: REPO_WITH_REGISTRY
+        k8ssandra.kube-prometheus-stack.prometheus.prometheusSpec.image.tag:
+          type: TAG
+
+    prometheus-config-reloader:
+      properties:
+        k8ssandra.kube-prometheus-stack.prometheusOperator.prometheusConfigReloaderImage.repository:
+          type: REPO_WITH_REGISTRY
+        k8ssandra.kube-prometheus-stack.prometheusOperator.prometheusConfigReloaderImage.tag:
+          type: TAG
+
+    prometheus-operator:
+      properties:
+        k8ssandra.kube-prometheus-stack.prometheusOperator.image.repository:
+          type: REPO_WITH_REGISTRY
+        k8ssandra.kube-prometheus-stack.prometheusOperator.image.tag:
           type: TAG
 
     grafana:
       properties:
-        k8ssandra.grafana.image.registry:
-          type: REGISTRY
-        k8ssandra.grafana.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.grafana.image.tag:
+        k8ssandra.kube-prometheus-stack.grafana.image.repository:
+          type: REPO_WITH_REGISTRY
+        k8ssandra.kube-prometheus-stack.grafana.image.tag:
           type: TAG
 
     grafana-sidecar:
@@ -155,6 +174,14 @@ x-google-marketplace:
           type: REPO_WITH_REGISTRY
         k8ssandra.kube-prometheus-stack.grafana.sidecar.image.tag:
           type: TAG
+
+    kube-prometheus-stack-admission-patch-certgen:
+      properties:
+        k8ssandra.kube-prometheus-stack.prometheusOperator.admissionWebhooks.patch.image.repository:
+          type: REPO_WITH_REGISTRY
+        k8ssandra.kube-prometheus-stack.prometheusOperator.admissionWebhooks.patch.image.tag:
+          type: TAG
+
 
   deployerServiceAccount:
     description: >

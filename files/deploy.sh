@@ -78,6 +78,10 @@ kustomize build /data/manifest-expanded > /data/manifest-expanded/chart.yaml
 
 rm /data/manifest-expanded/{kustomization,chart-kustomized,chart-kustomized2}.yaml
 
+# Remove unneeded version strings in the chart template
+sed -i 's|^  version: 1.3.*$||' /data/manifest-expanded/chart.yaml
+sed -i 's|^ *app.kubernetes.io/version: 1.3.*$||g' /data/manifest-expanded/chart.yaml
+
 # Add admission-controller resources
 openssl req -x509 \
     -sha256 \

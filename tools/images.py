@@ -29,7 +29,6 @@ image_map = {
     'medusa': 'k8ssandra/medusa:0.11.0',
     'stargate': 'stargateio/stargate-4_0:v1.0.29',
     'reaper': 'thelastpickle/cassandra-reaper:2.3.1',
-    'kube-prometheus-stack-admission-create-certgen': 'jettech/kube-webhook-certgen:v1.5.0',
     'kube-prometheus-stack-admission-patch-certgen': 'jettech/kube-webhook-certgen:v1.5.0',
     'grafana-sidecar': 'kiwigrid/k8s-sidecar:1.1.0',
     'prometheus-config-reloader': 'quay.io/prometheus-operator/prometheus-config-reloader:v0.44.0',
