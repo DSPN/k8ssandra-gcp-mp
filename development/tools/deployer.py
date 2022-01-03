@@ -14,7 +14,7 @@ def build():
     version, short_version = helpers.get_versions()
     cp = helpers.run(
         f"""
-        docker build -t {helpers.dev_staging_repo}/deployer:{version} {helpers.tools_dir}/..
+        docker build -t {helpers.dev_staging_repo}/deployer:{version} {helpers.tools_dir}/../..
         docker tag {helpers.dev_staging_repo}/deployer:{version} {helpers.dev_staging_repo}/deployer:{short_version}
         """
         )
@@ -25,6 +25,7 @@ def build():
             {cp.stdout}
             """
             )
+    print(cp.stdout)
 
 def push():
     print("pushing 'deployer'")
@@ -40,6 +41,7 @@ def push():
             {cp.stdout}
             """
             )
+    print(cp.stdout)
 
 def remove(version):
     print("removing 'deployer' from local repo")
@@ -57,6 +59,7 @@ def remove(version):
             {cp.stdout}
             """
             )
+    print(cp.stdout)
 
 
 def main():

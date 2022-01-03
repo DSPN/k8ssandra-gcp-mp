@@ -23,7 +23,7 @@ def run(command):
     return cp
 
 def get_versions():
-    doc = yaml.safe_load(open(f"{tools_dir}/../chart/k8ssandra-mp/Chart.yaml"))
+    doc = yaml.safe_load(open(f"{tools_dir}/../../chart/k8ssandra-mp/Chart.yaml"))
     version = doc['version']
     if version not in valid_versions:
         raise Exception(f"invalid version found in Chart.yaml: '{version}'")
@@ -37,7 +37,7 @@ def render_template(include_crds=False):
     include_crds_opt = '--include-crds' if include_crds else ""
     cp = run(
         f"""
-        helm template k8ssandra-mp {tools_dir}/../chart/k8ssandra-mp \
+        helm template k8ssandra-mp {tools_dir}/../../chart/k8ssandra-mp \
             {include_crds_opt} \
             --set k8ssandra.reaper.enabled=true \
             --set k8ssandra.reaper-operator.enabled=true \
