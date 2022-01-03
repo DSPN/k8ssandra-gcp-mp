@@ -375,6 +375,21 @@ properties:
     default: dc1
     description: name of the datacenter
 
+  k8ssandra.medusa.enabled:
+    type: boolean
+    description: Enable Medusa. Note storageCredentialsJSON must be set if this is turned on.
+    default: false
+
+  k8ssandra.medusa.bucketName:
+    type: string
+    description: GCS bucket name for Medusa
+    default: prod-k8ssandra-storage-bucket
+
+  k8ssandra.medusa.storageCredentialsJSON:
+    type: string
+    description: Contents of credentials.json for the service account created for use with Medusa's GCS bucket.
+    default: '{}'
+
 required:
   - name
   - namespace
