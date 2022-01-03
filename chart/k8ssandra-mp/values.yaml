@@ -30,4 +30,9 @@ k8ssandra:
     readinessInitialDelaySeconds: "240"
   kube-prometheus-stack:
     enabled: true
-
+  medusa:
+    enabled: false
+    storage: google_storage
+    bucket_name: prod-k8ssandra-mp-storage-bucket
+    storageSecret: prod-k8ssandra-mp-medusa-key
+    storageCredentialsJSON: ""

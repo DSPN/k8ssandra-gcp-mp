@@ -61,6 +61,16 @@ app_api_version=$(kubectl get "applications.app.k8s.io/$NAME" \
 
 create_manifests.sh
 
+# Create the medusa gcp key if medusa is enabled
+if grep -E "k8ssandra.medusa.enabled.*true" /data/final_values.yaml; then
+    medusa_storage_credentials_line=$(grep -E "k8ssandra.medusa.storageCredentialsJSON" /data/final_values.yaml)
+    temp=${medusa_storage_credentials_line#*: }
+    temp=${temp%\'}
+    temp=${temp#\'}
+    echo ${temp} > /app/medusa-gcp-key
+    kubectl create secret generic prod-k8ssandra-mp-medusa-key --from-file=medusa_gcp_key.json=/app/medusa-gcp-key
+fi
+
 CHART_FILE_NAME=chart.yaml envsubst \
     < /app/labels_and_service_accounts_kustomize.yaml \
     > /data/manifest-expanded/kustomization.yaml
