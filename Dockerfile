@@ -4,7 +4,6 @@ COPY files/create_manifests.sh /bin/
 COPY files/deploy.sh /bin/
 COPY files/print_config.py /bin/
 COPY files/parse_cassandra_dcs.py /bin/
-COPY files/admission-controller.yaml /app/
 COPY files/labels_and_service_accounts_kustomize.yaml /app/
 COPY files/excluded_resources_kustomize.yaml /app/
 COPY files/crds_kustomize.yaml /app/

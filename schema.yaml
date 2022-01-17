@@ -182,6 +182,10 @@ x-google-marketplace:
         k8ssandra.kube-prometheus-stack.prometheusOperator.admissionWebhooks.patch.image.tag:
           type: TAG
 
+    admission-controller:
+      properties:
+        k8ssandra.admissionControllerDatastax.image.repository:
+          type: FULL
 
   deployerServiceAccount:
     description: >
@@ -205,6 +209,21 @@ properties:
     type: string
     x-google-marketplace:
       type: NAMESPACE
+
+  admission-controller-datastax:
+    type: string
+    x-google-marketplace:
+      type: SERVICE_ACCOUNT
+      serviceAccount:
+        description: >
+          service account used for the admission controller component of k8ssandra-mp
+        roles:
+          - type: ClusterRole
+            rulesType: CUSTOM
+            rules:
+              - apiGroups: ["", "apps", "cassandra.datastax.com"]
+                resources: ["cassandradatacenters", "deployments"]
+                verbs: ["list", "delete", "patch", "update"]
 
   grafanaServiceAccount:
     type: string
