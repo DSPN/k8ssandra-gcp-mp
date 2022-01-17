@@ -103,11 +103,9 @@ openssl req -x509 \
     -subj "/C=US/ST=CA/L=NA/O=IT/CN=$NAME-admission-controller-datastax.$NAMESPACE.svc"
 cat /app/tls.key | base64 -w 0 > /app/tlsb64e.key
 cat /app/tls.crt | base64 -w 0 > /app/tlsb64e.crt
-sed -i "s|__APP_NAME__|$NAME|g" /app/admission-controller.yaml
-sed -i "s|__NAMESPACE__|$NAMESPACE|g" /app/admission-controller.yaml
-sed -i "s|^.*tls.crt.*$|  tls.crt: $(cat /app/tlsb64e.crt)|" /app/admission-controller.yaml
-sed -i "s|^.*tls.key.*$|  tls.key: $(cat /app/tlsb64e.key)|" /app/admission-controller.yaml
-sed -i "s|^.*caBundle.*$|      caBundle: $(cat /app/tlsb64e.crt)|" /app/admission-controller.yaml
+#sed -i "s|^.*ADMISSION_CONTROLLER_DATASTAX_CERT.*$|  tls.crt: $(cat /app/tlsb64e.crt)|" /data/manifest-expanded/chart.yaml
+#sed -i "s|^.*ADMISSION_CONTROLLER_DATASTAX_KEY.*$|  tls.key: $(cat /app/tlsb64e.key)|" /data/manifest-expanded/chart.yaml
+#sed -i "s|^.*ADMISSION_CONTROLLER_DATASTAX_BUNDLE.*$|    caBundle: $(cat /app/tlsb64e.crt)|" /data/manifest-expanded/chart.yaml
 
 # Assign owner references for the resources.
 /bin/set_ownership.py \
@@ -116,8 +114,6 @@ sed -i "s|^.*caBundle.*$|      caBundle: $(cat /app/tlsb64e.crt)|" /app/admissio
   --app_api_version "$app_api_version" \
   --manifests "/data/manifest-expanded" \
   --dest "/data/resources.yaml"
-
-cat /data/resources.yaml
 
 validate_app_resource.py --manifests "/data/resources.yaml"
 
@@ -148,15 +144,53 @@ kubectl apply  --namespace="$NAMESPACE" \
                --filename="/data/resources.yaml" \
                --selector is-crd=no,excluded-resource=no
 
-# Apply the admission-controller resource:
-kubectl apply --namespace="$NAMESPACE" --filename="/app/admission-controller.yaml"
-
 admission_controller_deployment_uid=$(kubectl get "deployments/$NAME-admission-controller-datastax" \
   --namespace="$NAMESPACE" \
   --output=jsonpath='{.metadata.uid}')
 
-sed -i "s|__UID__|$admission_controller_deployment_uid|g" /app/admission-controller.yaml
-kubectl apply --namespace="$NAMESPACE" --filename="/app/admission-controller.yaml"
+sed -i "s|ADMISSION_CONTROLLER_DATASTAX_DEPLOYMENT_UID|$admission_controller_deployment_uid|g" /data/resources.yaml
+kubectl apply --namespace="$NAMESPACE" \
+              --filename="/data/resources.yaml" \
+              --selector k8ssandra-mp-component=admission-controller-datastax
+
+kubectl patch secret ${NAME}-admission-controller-datastax --type=json --patch-file=/dev/stdin <<-EOF
+[
+  {
+    "op": "replace",
+    "path": "/data/tls.crt",
+    "value": "$(cat /app/tlsb64e.crt)"
+  },
+  {
+    "op": "replace",
+    "path": "/data/tls.key",
+    "value": "$(cat /app/tlsb64e.key)"
+  }
+]
+EOF
+kubectl patch secret ${NAME}-admission-controller-datastax --type=json --patch-file=/dev/stdin <<-EOF
+[
+  {
+    "op": "remove",
+    "path": "/metadata/ownerReferences/1"
+  }
+]
+EOF
+kubectl patch service ${NAME}-admission-controller-datastax --type=json --patch-file=/dev/stdin <<-EOF
+[
+  {
+    "op": "remove",
+    "path": "/metadata/ownerReferences/1"
+  }
+]
+EOF
+
+kubectl get validatingwebhookconfiguration ${NAME}-admission-controller-datastax -o yaml > /app/vwc.yaml
+sed -i "s|^.*caBundle:.*$|    caBundle: $(cat /app/tlsb64e.crt)|" /app/vwc.yaml
+kubectl apply -f /app/vwc.yaml
+
+#sed -i "s|^.*ADMISSION_CONTROLLER_DATASTAX_CERT.*$|  tls.crt: $(cat /app/tlsb64e.crt)|" /data/manifest-expanded/chart.yaml
+#sed -i "s|^.*ADMISSION_CONTROLLER_DATASTAX_KEY.*$|  tls.key: $(cat /app/tlsb64e.key)|" /data/manifest-expanded/chart.yaml
+#sed -i "s|^.*ADMISSION_CONTROLLER_DATASTAX_BUNDLE.*$|    caBundle: $(cat /app/tlsb64e.crt)|" /data/manifest-expanded/chart.yaml
 
 patch_assembly_phase.sh --status="Success"
 
