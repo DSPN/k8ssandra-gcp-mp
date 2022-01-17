@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: "{{ .Release.Name }}-admission-controller-datastax"
+  labels:
+    k8ssandra-mp-component: admission-controller-datastax
+  ownerReferences:
+  - apiVersion: app.k8s.io/v1beta1
+    blockOwnerDeletion: true
+    kind: Deployment
+    name: "{{ .Release.Name }}-admission-controller-datastax"
+    uid: ADMISSION_CONTROLLER_DATASTAX_DEPLOYMENT_UID
+type: Opaque
+data:
+  tls.crt: dGhpcyBpcyBqdXN0IGEgcGxhY2hvbGRlcgo=
+  tls.key: dGhpcyBpcyBqdXN0IGEgcGxhY2hvbGRlcgo=
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: "{{ .Release.Name }}-admission-controller-datastax"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: "{{ .Release.Name }}-admission-controller-datastax"
+  template:
+    metadata:
+      labels:
+        app: "{{ .Release.Name }}-admission-controller-datastax"
+    spec:
+      serviceAccountName: "{{ .Release.Name }}-admission-controller-datastax"
+      containers:
+        - name: admission-controller-datastax
+          image: "{{ .Values.k8ssandra.admissionControllerDatastax.image.repository }}"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 4443
+          volumeMounts:
+            - name: certs
+              mountPath: /admission-controller/cert
+              readOnly: true
+      volumes:
+        - name: certs
+          secret:
+            secretName: "{{ .Release.Name }}-admission-controller-datastax"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ .Release.Name }}-admission-controller-datastax"
+  labels:
+    k8ssandra-mp-component: admission-controller-datastax
+  ownerReferences:
+  - apiVersion: app.k8s.io/v1beta1
+    blockOwnerDeletion: true
+    kind: Deployment
+    name: "{{ .Release.Name }}-admission-controller-datastax"
+    uid: ADMISSION_CONTROLLER_DATASTAX_DEPLOYMENT_UID
+spec:
+  selector:
+    app: "{{ .Release.Name }}-admission-controller-datastax"
+  ports:
+    - port: 4443
+      targetPort: 4443
+---
+apiVersion: admissionregistration.k8s.io/v1beta1
+kind: ValidatingWebhookConfiguration
+metadata:
+  name: "{{ .Release.Name }}-admission-controller-datastax"
+  labels:
+    component: validating-controller
+webhooks:
+  - name: "{{ .Release.Name }}-admission-controller-datastax.{{ .Release.Namespace }}.svc"
+    failurePolicy: Ignore
+    admissionReviewVersions: ["v1", "v1beta1"]
+    sideEffects: None
+    timeoutSeconds: 30
+    clientConfig:
+      service:
+        name: "{{ .Release.Name }}-admission-controller-datastax"
+        namespace: "{{ .Release.Namespace }}"
+        path: /validate/applications
+        port: 4443
+      caBundle: dGhpcyBpcyBqdXN0IGEgcGxhY2hvbGRlcgo=
+    rules:
+      - apiGroups: ["app.k8s.io"]
+        resources:
+          - "applications"
+        apiVersions:
+          - "*"
+        operations:
+          - DELETE
