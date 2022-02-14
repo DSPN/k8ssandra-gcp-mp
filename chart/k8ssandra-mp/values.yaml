@@ -6,7 +6,7 @@ k8ssandra:
     version: "4.0.0"
     cassandraLibDirVolume:
       storageClass: k8ssandra-storage
-      size: 1Gi
+      size: 5Gi
     allowMultipleNodesPerWorker: true
     heap:
       size: 1G
