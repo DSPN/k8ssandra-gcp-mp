@@ -68,7 +68,19 @@ def remove_deployment(deployment, app_name, namespace):
     config.load_incluster_config()
     apps_api = client.AppsV1Api()
     name = "{}-{}".format(app_name, deployment)
-    apps_api.delete_namespaced_deployment(name, namespace, propagation_policy="Background")
+    apps_api.delete_namespaced_deployment(name, namespace, grace_period_seconds=0, propagation_policy="Foreground")
+
+def remove_service(service, app_name, namespace):
+    config.load_incluster_config()
+    core_api = client.CoreV1Api()
+    name = "{}-{}".format(app_name, service)
+    core_api.delete_namespaced_service(name, namespace, grace_period_seconds=0, propagation_policy="Foreground")
+
+def remove_secret(secret, app_name, namespace):
+    config.load_incluster_config()
+    core_api = client.CoreV1Api()
+    name = "{}-{}".format(app_name, secret)
+    core_api.delete_namespaced_secret(name, namespace, grace_period_seconds=0, propagation_policy="Foreground")
 
 @admission_controller.route('/validate/applications', methods=['POST'])
 def deployment_webhook():
@@ -78,6 +90,9 @@ def deployment_webhook():
         namespace = admission_review['request']['namespace']
         name = admission_review['request']['name']
         uid = admission_review['request']['uid']
+        is_application = admission_review.get('request', {}).get('requestKind', {}).get('kind','') == 'Application'
+        if not is_application or is_application and admission_review['request']['operation'] != 'DELETE':
+            return allow(uid)
 
         # We need to remove the cass-operator deployment first
         # before we remove the finalizer or it will restore
@@ -91,17 +106,26 @@ def deployment_webhook():
             remove_finalizer(namespace, dc)
 
         time.sleep(5)
-        remove_deployment('admission-controller-datastax', name, namespace)
+
+        remove_deployment('admiss-ctrl-datastax', name, namespace)
+        remove_service('admiss-ctrl-datastax', name, namespace)
+        remove_secret('admiss-ctrl-datastax', name, namespace)
+
     except Exception as e:
         admission_controller.logger.error(e)
 
+    return allow(uid)
+
+def allow(uid):
     return jsonify({
-        "response" : {"allowed" : True, "status" : {"message" : "success"}, "uid" : uid}
+        "apiVersion": "admission.k8s.io/v1",
+        "kind": "AdmissionReview",
+        "response" : {"allowed" : True, "status" : {"message" : "n/a"}, "uid" : uid}
     })
 
 if __name__ == '__main__':
     admission_controller.run(
-        debug=True,
+        debug=False,
         host='0.0.0.0',
         port=4443,
         ssl_context=("/admission-controller/cert/tls.crt", "/admission-controller/cert/tls.key")

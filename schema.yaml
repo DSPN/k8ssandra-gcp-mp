@@ -210,7 +210,7 @@ properties:
     x-google-marketplace:
       type: NAMESPACE
 
-  admission-controller-datastax:
+  admiss-ctrl-datastax:
     type: string
     x-google-marketplace:
       type: SERVICE_ACCOUNT
@@ -222,7 +222,7 @@ properties:
             rulesType: CUSTOM
             rules:
               - apiGroups: ["", "apps", "cassandra.datastax.com"]
-                resources: ["cassandradatacenters", "deployments"]
+                resources: ["cassandradatacenters", "deployments", "services", "secrets"]
                 verbs: ["list", "delete", "patch", "update"]
 
   grafanaServiceAccount:
@@ -374,10 +374,41 @@ properties:
     default: "k8ssandra-mp"
     description: name of the Cassandra cluster
 
+  k8ssandra.cassandra.cassandraLibDirVolume.storageClass:
+    type: string
+    x-google-marketplace:
+      type: STORAGE_CLASS
+      storageClass:
+        type: SSD
+
   k8ssandra.cassandra.cassandraLibDirVolume.size:
     type: string
-    default: "10Gi"
+    default: "5Gi"
     description: size of the storage volume for Cassandra
+
+  k8ssandra.cassandra.heap.size:
+    type: string
+    default: "1G"
+
+  k8ssandra.cassandra.heap.newGenSize:
+    type: string
+    default: "1G"
+
+  k8ssandra.cassandra.resources.requests.cpu:
+    type: string
+    default: "1000m"
+
+  k8ssandra.cassandra.resources.requests.memory:
+    type: string
+    default: "2Gi"
+
+  k8ssandra.cassandra.resources.limits.cpu:
+    type: string
+    default: "1000m"
+
+  k8ssandra.cassandra.resources.limits.memory:
+    type: string
+    default: "2Gi"
 
   # This syntax is not supported by GCP Marketplace out of the box, so
   # added some custom parsing magic in the deployer image.
