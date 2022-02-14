@@ -2,11 +2,13 @@ FROM gcr.io/cloud-marketplace-tools/k8s/deployer_helm/onbuild
 
 COPY files/create_manifests.sh /bin/
 COPY files/deploy.sh /bin/
+COPY files/deploy_with_tests.sh /bin/
 COPY files/print_config.py /bin/
 COPY files/parse_cassandra_dcs.py /bin/
 COPY files/labels_and_service_accounts_kustomize.yaml /app/
 COPY files/excluded_resources_kustomize.yaml /app/
 COPY files/crds_kustomize.yaml /app/
+COPY files/kube-admission-create-kustomize.yaml /app/
 
 COPY 3rd-party /3rd-party
 
