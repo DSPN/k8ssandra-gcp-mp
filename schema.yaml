@@ -175,7 +175,7 @@ x-google-marketplace:
         k8ssandra.kube-prometheus-stack.grafana.sidecar.image.tag:
           type: TAG
 
-    kube-prometheus-stack-admission-patch-certgen:
+    kube-prometheus-stack-admission-patch:
       properties:
         k8ssandra.kube-prometheus-stack.prometheusOperator.admissionWebhooks.patch.image.repository:
           type: REPO_WITH_REGISTRY

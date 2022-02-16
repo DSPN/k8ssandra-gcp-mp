@@ -112,6 +112,8 @@ rm /data/manifest-expanded/{kustomization,chart-kustomized,chart-kustomized2,cha
 sed -i 's|^  version: 1.3.*$||' /data/manifest-expanded/chart.yaml
 sed -i 's|^ *app.kubernetes.io/version: 1.3.*$||g' /data/manifest-expanded/chart.yaml
 
+/usr/bin/env python3 /app/remove-cass-crd.py
+
 # Add admission-controller resources
 openssl req -x509 \
     -sha256 \
@@ -148,6 +150,8 @@ separate_tester_resources.py \
 kubectl apply --namespace="$NAMESPACE" \
               --filename="/data/resources.yaml" \
               --selector is-crd=yes || true
+kubectl apply --namespace="$NAMESPACE" \
+              --filename="/app/cassandra-datacenter-crd.yaml"
 
 # wait for CRDS to be created.
 # TODO: use something like kubectl wait --for condition=established --timeout=120s instead of hard coding a timeout here.
@@ -157,6 +161,8 @@ sleep 30
 kubectl apply --namespace="$NAMESPACE" \
               --filename="/data/resources.yaml" \
               --selector is-crd=yes || true
+kubectl apply --namespace="$NAMESPACE" \
+              --filename="/app/cassandra-datacenter-crd.yaml"
 
 # Give enough time for the crds to become available.
 sleep 10

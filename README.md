@@ -36,8 +36,10 @@ Create a new cluster from the command line:
 export CLUSTER=k8ssandra-mp-cluster
 export CLUSTER_SIZE=3
 export ZONE=us-west1-a
+export RELEASE_CHANNEL=rapid
 gcloud container clusters create "${CLUSTER}" \
     --zone "$ZONE" \
+    --release-channel "$RELEASE_CHANNEL" \
     --machine-type e2-standard-2 \
     --num-nodes "$CLUSTER_SIZE"
 ```
@@ -114,7 +116,7 @@ export IMAGE_CLEANER="cleaner"
 export IMAGE_CLIENT="client"
 export IMAGE_GRAFANA="grafana"
 export IMAGE_GRAFANA_SIDECAR="grafana-sidecar"
-export IMAGE_KUBE_PROMETHEUS_STACK_ADMISSION_PATCH_CERTGEN="kube-prometheus-stack-admission-patch-certgen"
+export IMAGE_KUBE_PROMETHEUS_STACK_ADMISSION_PATCH="kube-prometheus-stack-admission-patch"
 export IMAGE_MEDUSA="medusa"
 export IMAGE_MEDUSA_OPERATOR="medusa-operator"
 export IMAGE_PROMETHEUS="prometheus"
@@ -605,7 +607,7 @@ helm template "${APP_INSTANCE_NAME}" chart/k8ssandra-mp \
     --set k8ssandra.kube-prometheus-stack.prometheusOperator.image.tag="${TAG}" \
     --set k8ssandra.kube-prometheus-stack.prometheusOperator.prometheusConfigReloaderImage.repository="${REGISTRY}/${REPOSITORY}/${IMAGE_PROMETHEUS_CONFIG_RELOADER}" \
     --set k8ssandra.kube-prometheus-stack.prometheusOperator.prometheusConfigReloaderImage.tag="${TAG}" \
-    --set k8ssandra.kube-prometheus-stack.prometheusOperator.admissionWebhooks.patch.image.repository="${REGISTRY}/${REPOSITORY}/${IMAGE_KUBE_PROMETHEUS_STACK_ADMISSION_PATCH_CERTGEN}" \
+    --set k8ssandra.kube-prometheus-stack.prometheusOperator.admissionWebhooks.patch.image.repository="${REGISTRY}/${REPOSITORY}/${IMAGE_KUBE_PROMETHEUS_STACK_ADMISSION_PATCH}" \
     --set k8ssandra.kube-prometheus-stack.prometheusOperator.admissionWebhooks.patch.image.tag="${TAG}" \
     --set k8ssandra.kube-prometheus-stack.grafana.image.repository="${REGISTRY}/${REPOSITORY}/${IMAGE_GRAFANA}" \
     --set k8ssandra.kube-prometheus-stack.grafana.image.tag="${TAG}" \
