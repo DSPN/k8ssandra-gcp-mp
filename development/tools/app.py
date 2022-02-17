@@ -8,24 +8,26 @@ valid_operations = (
     'prod-install',
 )
 
-def dev_install(version):
+def dev_install(version, namespace="default"):
     cp = helpers.run(
         """
         mpdev install --deployer={deployer} \
-                      --parameters='{{"name": "{app_name}", "namespace": "default"}}'
+                      --parameters='{{"name": "{app_name}", "namespace": "{namespace}"}}'
         """.format(deployer=f"{helpers.dev_staging_repo}/deployer:{version}",
-                   app_name=helpers.application_name)
+                   app_name=helpers.application_name,
+                   namespace=namespace)
 
         )
     print(cp.stdout)
 
-def prod_install(version):
+def prod_install(version, namespace="default"):
     cp = helpers.run(
         """
         mpdev install --deployer={deployer} \
-                      --parameters='{{"name": "{app_name}", "namespace": "default"}}'
+                      --parameters='{{"name": "{app_name}", "namespace": "{namespace}"}}'
         """.format(deployer=f"{helpers.prod_staging_repo}/deployer:{version}",
-                   app_name=helpers.application_name)
+                   app_name=helpers.application_name,
+                   namespace=namespace)
 
         )
     print(cp.stdout)
@@ -40,6 +42,9 @@ def main():
     parser.add_argument(
         '--version',
         '-v')
+    parser.add_argument(
+        '--namespace',
+        '-n')
 
     args = parser.parse_args()
 
@@ -49,10 +54,10 @@ def main():
             sys.exit(1)
 
     if args.operation == 'dev-install':
-        dev_install(args.version)
+        dev_install(args.version, args.namespace)
 
     if args.operation == 'prod-install':
-        prod_install(args.version)
+        prod_install(args.version, args.namespace)
 
 if __name__ == '__main__':
     main()

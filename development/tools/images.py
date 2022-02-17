@@ -14,6 +14,9 @@ valid_operations = (
     'publish',
 )
 
+# See this issue for why we used k8s.gcr.io/ingress-nginx/kube-webhook-certgen:v1.1.1
+# instead of jettech/kube-webhook-certgen:
+# https://github.com/jet/kube-webhook-certgen/issues/30
 image_map = {
     'stargate-wait-for-cassandra': 'alpine:3.12.2',
     'cassandra-jmx-credentials': 'busybox:1.33.1',
@@ -29,7 +32,7 @@ image_map = {
     'medusa': 'k8ssandra/medusa:0.11.0',
     'stargate': 'stargateio/stargate-4_0:v1.0.29',
     'reaper': 'thelastpickle/cassandra-reaper:2.3.1',
-    'kube-prometheus-stack-admission-patch-certgen': 'jettech/kube-webhook-certgen:v1.5.0',
+    'kube-prometheus-stack-admission-patch': 'k8s.gcr.io/ingress-nginx/kube-webhook-certgen:v1.1.1',
     'grafana-sidecar': 'kiwigrid/k8s-sidecar:1.1.0',
     'prometheus-config-reloader': 'quay.io/prometheus-operator/prometheus-config-reloader:v0.44.0',
     'prometheus-operator': 'quay.io/prometheus-operator/prometheus-operator:v0.44.0',
