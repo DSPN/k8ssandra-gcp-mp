@@ -44,7 +44,8 @@ def main():
         '-v')
     parser.add_argument(
         '--namespace',
-        '-n')
+        '-n',
+        default='default')
 
     args = parser.parse_args()
 

@@ -167,11 +167,13 @@ class ImagePusher:
 
 class ImagePublisher:
 
-    def publish(self, version):
+    def publish(self, version, deployer_only):
         short_version = helpers.get_short_version(version)
         items = dict(image_map)
         items['deployer'] = 'deployer'
         for name in items.keys():
+            if deployer_only and name != 'deployer':
+                continue
             dev_staging_name = f"{helpers.dev_staging_repo}/{name}"
             prod_staging_name = f"{helpers.prod_staging_repo}/{name}"
             print(f"creating tag. Source: '{dev_staging_name}', Dest: '{prod_staging_name}'")
@@ -234,6 +236,10 @@ def main():
     parser.add_argument(
         '--version',
         '-v')
+    parser.add_argument(
+        '--deployer_only',
+        '-d',
+        action='store_true')
 
     args = parser.parse_args()
 
@@ -262,7 +268,7 @@ def main():
             print("<version is required for the 'publish' operation")
             sys.exit(1)
         version = args.version
-        ImagePublisher().publish(version)
+        ImagePublisher().publish(version, args.deployer_only)
 
 if __name__ == '__main__':
     main()
