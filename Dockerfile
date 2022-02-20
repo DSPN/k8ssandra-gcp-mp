@@ -23,5 +23,5 @@ RUN /bin/bash -c 'chmod u+x /bin/print_config.py'
 RUN /bin/bash -c 'curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash; \
 mv ./kustomize /bin/'
 
-ENV WAIT_FOR_READY_TIMEOUT 900
-ENV TESTER_TIMEOUT 900
+ENV WAIT_FOR_READY_TIMEOUT 1500 
+ENV TESTER_TIMEOUT 1500

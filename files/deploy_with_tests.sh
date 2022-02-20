@@ -214,7 +214,7 @@ kubectl patch --namespace="$NAMESPACE" service ${NAME}-admiss-ctrl-datastax --ty
 EOF
 
 kubectl get --namespace="$NAMESPACE" validatingwebhookconfiguration ${NAME}-admiss-ctrl-datastax -o yaml > /app/vwc.yaml
-sed -i "s|^.*caBundle:.*$|    caBundle: $(cat /app/tlsb64e.crt)|" /app/vwc.yaml
+sed -r -i "s|(^ *?caBundle:).*$|\1 $(cat /app/tlsb64e.crt)|" /app/vwc.yaml
 kubectl apply --namespace="$NAMESPACE" -f /app/vwc.yaml
 
 # restart the admission controller deployment so the secret containing the
@@ -226,7 +226,7 @@ patch_assembly_phase.sh --status="Success"
 wait_for_ready.py \
   --name $NAME \
   --namespace $NAMESPACE \
-  --timeout ${WAIT_FOR_READY_TIMEOUT:-900}
+  --timeout ${WAIT_FOR_READY_TIMEOUT:-1500}
 
 tester_manifest="/data/tester.yaml"
 if [[ -e "$tester_manifest" ]]; then
