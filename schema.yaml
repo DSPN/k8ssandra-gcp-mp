@@ -210,6 +210,11 @@ properties:
     x-google-marketplace:
       type: NAMESPACE
 
+  reportingSecret:
+    type: string
+    x-google-marketplace:
+      type: REPORTING_SECRET
+
   admiss-ctrl-datastax:
     type: string
     x-google-marketplace:
