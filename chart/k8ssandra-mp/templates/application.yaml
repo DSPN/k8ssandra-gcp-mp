@@ -8,12 +8,29 @@ metadata:
   labels:
     app.kubernetes.io/name: "{{ .Release.Name }}"
   annotations:
-    marketplace.cloud.google.com/deploy-info: '{"partner_id": "datastax-public", "product_id": "k8ssandra-mp", "partner_name": "DataStax"}'
+    kubernetes-engine.cloud.google.com/icon: >-
+      data:image/png;base64,{{ .Files.Get "logo.png" | b64enc }}
+    marketplace.cloud.google.com/deploy-info: '{"partner_id": "datastax-public", "product_id": "k8ssandra-marketplace", "partner_name": "DataStax"}'
 
 spec:
   descriptor:
     type: K8ssandra-mp
     version: "1.3.1"
+    description: >-
+      Built on the rock-solid Apache Cassandra® NoSQL database, K8ssandra brings together a complete operational data platform for Kubernetes including APIs, monitoring, and backups.
+    maintainers:
+      - name: DataStax
+        url: https://github.com/DSPN/k8ssandra-gcp-mp#readme
+    links:
+      - description: 'User Guide: K8ssandra-marketplace'
+        url: https://github.com/DSPN/k8ssandra-gcp-mp#readme
+    notes: |-
+
+      # Wait for the Application components to become available
+      It will take about 10 or 15 minutes for all the components of k8ssandra to become fully available and ready to use. You can follow the status of the install process with the following command:
+
+        `watch kubectl get pods --namespace "$NAMESPACE"`
+
   selector:
     matchLabels:
       app.kubernetes.io/name: "{{ .Release.Name }}"
@@ -49,6 +66,8 @@ spec:
       kind: CassandraDatacenter
     - group: 'admissionregistration.k8s.io/v1'
       kind: MutatingWebhookConfiguration
+    - group: 'admissionregistration.k8s.io/v1'
+      kind: ValidatingWebhookConfiguration
     - group: 'monitoring.coreos.com/v1'
       kind: Prometheus
     - group: 'monitoring.coreos.com/v1'
@@ -57,10 +76,7 @@ spec:
       kind: Reaper
     - group: 'monitoring.coreos.com/v1'
       kind: ServiceMonitor
-    - group: 'admissionregistration.k8s.io/v1'
-      kind: ValidatingWebhookConfiguration
     - group: 'v1'
       kind: Pod
     - group: 'batch/v1'
       kind: Job
-
