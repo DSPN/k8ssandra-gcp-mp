@@ -1,0 +1,27 @@
+=== Deployer ===
+
+Here's what I'm doing currently to build and install the deployer during development.
+
+Create a minimally suitable dev cluster on gke:
+gcloud container clusters create --machine-type e2-standard-2 mallen-1
+
+Install the application crd so cluster will understand the Application resource type:
+kubectl apply -f "https://raw.githubusercontent.com/GoogleCloudPlatform/marketplace-k8s-app-tools/master/crd/app-crd.yaml"
+
+Create a storage class to be used for the C* volumes:
+kubectl apply -f files/storage-class.yaml
+
+Download the k8ssandra charts
+helm dependency build chart/k8ssandra-mp
+
+export REGISTRY=gcr.io/gke-launcher-dev
+export APP_NAME=k8ssandra-mp
+
+docker build --tag $REGISTRY/$APP_NAME/deployer .
+docker push $REGISTRY/$APP_NAME/deployer
+
+create new namespace to run in:
+kubectl create namespace mallen
+
+mpdev install --deployer=$REGISTRY/$APP_NAME/deployer --parameters='{"name": "k8ssandra-mp", "namespace": "mallen"}'
+
