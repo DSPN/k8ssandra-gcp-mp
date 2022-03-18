@@ -22,7 +22,7 @@ image_map = {
     'cassandra-jmx-credentials': 'busybox:1.33.1',
     'cassandra-config-builder': 'datastax/cass-config-builder:1.0.4',
     'grafana': 'grafana/grafana:7.3.5',
-    'cassandra': 'k8ssandra/cass-management-api:4.0.0-v0.1.28',
+    helpers.application_name: 'k8ssandra/cass-management-api:4.0.0-v0.1.28',
     'cass-operator': 'k8ssandra/cass-operator:v1.7.1',
     'cleaner': 'k8ssandra/k8ssandra-tools:latest',
     'client': 'k8ssandra/k8ssandra-tools:latest',
@@ -131,10 +131,14 @@ class ImageTagger:
         for name, image in image_map.items():
             print(f"tagging '{name}'")
             tag = ':'.join(image.split(':')[1:])
+            if name == helpers.application_name:
+                image_ref = helpers.dev_staging_repo
+            else:
+                image_ref = f'{helpers.dev_staging_repo}/{name}'
             cp = helpers.run(
                 f"""
-                docker tag {image} {helpers.dev_staging_repo}/{name}:{version}
-                docker tag {image} {helpers.dev_staging_repo}/{name}:{short_version}
+                docker tag {image} {image_ref}:{version}
+                docker tag {image} {image_ref}:{short_version}
                 """
                 )
             if cp.returncode != 0:
@@ -151,9 +155,13 @@ class ImagePusher:
     def push(self):
         for name, image in image_map.items():
             print(f"pushing '{name}'")
+            if name == helpers.application_name:
+                image_ref = helpers.dev_staging_repo
+            else:
+                image_ref = f'{helpers.dev_staging_repo}/{name}'
             cp = helpers.run(
                 f"""
-                docker image push --all-tags {helpers.dev_staging_repo}/{name}
+                docker image push --all-tags {image_ref}
                 """
                 )
             if cp.returncode != 0:
@@ -174,8 +182,12 @@ class ImagePublisher:
         for name in items.keys():
             if deployer_only and name != 'deployer':
                 continue
-            dev_staging_name = f"{helpers.dev_staging_repo}/{name}"
-            prod_staging_name = f"{helpers.prod_staging_repo}/{name}"
+            if name == helpers.application_name:
+                dev_staging_name = helpers.dev_staging_repo
+                prod_staging_name = helpers.prod_staging_repo
+            else:
+                dev_staging_name = f"{helpers.dev_staging_repo}/{name}"
+                prod_staging_name = f"{helpers.prod_staging_repo}/{name}"
             print(f"creating tag. Source: '{dev_staging_name}', Dest: '{prod_staging_name}'")
             cp = helpers.run(
                 f"""
@@ -212,10 +224,14 @@ class ImageRemover:
         short_version = helpers.get_short_version(version)
         for name, image in image_map.items():
             print(f"removing '{name}' from local repo")
+            if name == helpers.application_name:
+                image_ref = helpers.dev_staging_repo
+            else:
+                image_ref = f'{helpers.dev_staging_repo}/{name}'
             cp = helpers.run(
                 f"""
-                docker image rm {helpers.dev_staging_repo}/{name}:{version}
-                docker image rm {helpers.dev_staging_repo}/{name}:{short_version}
+                docker image rm {image_ref}:{version}
+                docker image rm {image_ref}:{short_version}
                 """
                 )
             if cp.returncode != 0:
