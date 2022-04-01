@@ -4,7 +4,7 @@ x-google-marketplace:
 
   applicationApiVersion: v1beta1
 
-  publishedVersion: "1.3.2-k8ssandra1.3.1"
+  publishedVersion: "1.3.2-k8ssandra1.3.1b1"
   publishedVersionMetadata:
     releaseNote: >-
       Initial release.
@@ -129,15 +129,6 @@ x-google-marketplace:
         k8ssandra.medusa-operator.image.repository:
           type: REPO_WITHOUT_REGISTRY
         k8ssandra.medusa-operator.image.tag:
-          type: TAG
-
-    prometheus-operator:
-      properties:
-        k8ssandra.kube-prometheus-stack.prometheus-operator.image.registry:
-          type: REGISTRY
-        k8ssandra.kube-prometheus-stack.prometheus-operator.image.repository:
-          type: REPO_WITHOUT_REGISTRY
-        k8ssandra.kube-prometheus-stack.prometheus-operator.image.tag:
           type: TAG
 
     prometheus:

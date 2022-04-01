@@ -1,0 +1,42 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+patches:
+  - target:
+      kind: CassandraDatacenter
+    patch: |-
+      - op: add
+        path: /spec/podTemplateSpec/spec/initContainers/-
+        value:
+          name: ubbagent
+          image: imageUbbagent
+          env:
+            - name: AGENT_CONFIG_FILE
+              value: "/etc/ubbagent/config.yaml"
+            - name: AGENT_LOCAL_PORT
+              value: "4567"
+            - name: AGENT_ENCODED_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: reportingSecret
+                  key: reporting-key
+            - name: AGENT_CONSUMER_ID
+              valueFrom:
+                secretKeyRef:
+                  name: reportingSecret
+                  key: consumer-id
+          volumeMounts:
+            - name: ubbagent-config
+              mountPath: /etc/ubbagent
+  - target:
+      kind: CassandraDatacenter
+    patch: |-
+      - op: add
+        path: /spec/podTemplateSpec/spec/volumes/-
+        value:
+          name: ubbagent-config
+          configMap:
+            name: ubbagent-config
+
+resources:
+  - m.yaml

@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ .Release.name }}-ubbagent-config"
+data:
+  config.yaml: |
+    # The identity section contains authentication information used
+    # by the agent.
+    identities:
+    - name: gcp
+      gcp:
+        # This parameter accepts a base64-encoded JSON service
+        # account key. The value comes from the reporting secret.
+        encodedServiceAccountKey: $AGENT_ENCODED_KEY
+
+    # The metrics section defines the metric that will be reported.
+    # Metric names should match verbatim the identifiers created
+    # during pricing setup.
+    metrics:
+
+    - name: k8ssandra-marketplace.mp-datastax-public.appspot.com/per_cassandra_workload
+      metric_kind: DELTA
+      value_type: INT64
+      unit: h
+
+    - name: servicecontrol
+      servicecontrol:
+        identity: gcp
+        # The service name is unique to your application and will be
+        # provided during onboarding.
+        serviceName: my-application.mp-my-company.appspot.com
+        consumerId: $AGENT_CONSUMER_ID  # From the reporting secret.
+      
+
+    # The sources section lists metric data sources run by the agent
+    # itself. The currently-supported source is 'heartbeat', which
+    # sends a defined value to a metric at a defined interval. In
+    # this example, the heartbeat sends a 60-second value through the
+    # "instance_time" metric every minute.
+    sources:
+    - name: instance_time_heartbeat
+      heartbeat:
+        metric: k8ssandra-marketplace.mp-datastax-public.appspot.com/per_cassandra_workload
+        intervalSeconds: 3600
+        value:
+          int64Value: 3600

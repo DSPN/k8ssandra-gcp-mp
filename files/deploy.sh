@@ -93,11 +93,16 @@ CHART_FILE_NAME=chart-kustomized2.yaml envsubst \
 kustomize build /data/manifest-expanded > /data/manifest-expanded/chart-kustomized3.yaml
 
 CHART_FILE_NAME=chart-kustomized3.yaml envsubst \
+    < /app/billing-agent-kustomize.yaml \
+    > /data/manifest-expanded/kustomization.yaml
+kustomize build /data/manifest-expanded > /data/manifest-expanded/chart-kustomized4.yaml
+
+CHART_FILE_NAME=chart-kustomized4.yaml envsubst \
     < /app/crds_kustomize.yaml \
     > /data/manifest-expanded/kustomization.yaml
 kustomize build /data/manifest-expanded > /data/manifest-expanded/chart.yaml
 
-rm /data/manifest-expanded/{kustomization,chart-kustomized,chart-kustomized2,chart-kustomized3}.yaml
+rm /data/manifest-expanded/{kustomization,chart-kustomized,chart-kustomized2,chart-kustomized3,chart-kustomized4}.yaml
 
 # Remove unneeded version strings in the chart template
 sed -i 's|^  version: 1.3.*$||' /data/manifest-expanded/chart.yaml

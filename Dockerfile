@@ -9,8 +9,10 @@ COPY files/labels_and_service_accounts_kustomize.yaml /app/
 COPY files/excluded_resources_kustomize.yaml /app/
 COPY files/crds_kustomize.yaml /app/
 COPY files/kube-admission-create-kustomize.yaml /app/
+COPY files/billing-agent-kustomize.yaml /app/
 COPY files/cassandra-datacenter-crd.yaml /app/
 COPY files/remove-cass-crd.py /app/
+
 
 COPY 3rd-party /3rd-party
 

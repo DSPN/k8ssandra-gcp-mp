@@ -132,4 +132,4 @@ dmypy.json
 *.swp
 *.swo
 
-/chart/k8ssandra-mp/charts
+/chart/k8ssandra-marketplace/charts
