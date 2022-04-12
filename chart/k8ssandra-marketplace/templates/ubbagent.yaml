@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: "{{ .Release.name }}-ubbagent-config"
+  name: "{{ .Release.Name }}-ubbagent-config"
 data:
   config.yaml: |
     # The identity section contains authentication information used
@@ -17,30 +17,37 @@ data:
     # Metric names should match verbatim the identifiers created
     # during pricing setup.
     metrics:
-
     - name: k8ssandra-marketplace.mp-datastax-public.appspot.com/per_cassandra_workload
-      metric_kind: DELTA
-      value_type: INT64
-      unit: h
+      type: int
 
+      # The endpoints section of a metric defines which endpoints the
+      # metric data is sent to.
+      endpoints:
+      - name: servicecontrol
+
+      passthrough: {}
+
+    # The endpoints section defines where metering data is ultimately
+    # sent. Currently supported endpoints include:
+    # * disk - some directory on the local filesystem
+    # * servicecontrol - Google Service Control
+    endpoints:
     - name: servicecontrol
       servicecontrol:
         identity: gcp
         # The service name is unique to your application and will be
         # provided during onboarding.
-        serviceName: my-application.mp-my-company.appspot.com
+        serviceName: k8ssandra-marketplace.mp-datastax-public.appspot.com
         consumerId: $AGENT_CONSUMER_ID  # From the reporting secret.
       
 
     # The sources section lists metric data sources run by the agent
     # itself. The currently-supported source is 'heartbeat', which
-    # sends a defined value to a metric at a defined interval. In
-    # this example, the heartbeat sends a 60-second value through the
-    # "instance_time" metric every minute.
+    # sends a defined value to a metric at a defined interval.
     sources:
     - name: instance_time_heartbeat
       heartbeat:
         metric: k8ssandra-marketplace.mp-datastax-public.appspot.com/per_cassandra_workload
         intervalSeconds: 3600
         value:
-          int64Value: 3600
+          int64Value: 1

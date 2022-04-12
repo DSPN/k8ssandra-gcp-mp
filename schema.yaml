@@ -4,7 +4,7 @@ x-google-marketplace:
 
   applicationApiVersion: v1beta1
 
-  publishedVersion: "1.3.2-k8ssandra1.3.1b1"
+  publishedVersion: "1.3.2-k8ssandra1.3.1b2"
   publishedVersionMetadata:
     releaseNote: >-
       Initial release.
@@ -22,6 +22,11 @@ x-google-marketplace:
           type: REPO_WITHOUT_REGISTRY
         k8ssandra.cassandra.image.tag:
           type: TAG
+
+    ubbagent:
+      properties:
+        ubbagent-image-repository:
+          type: FULL
 
     cassandra-config-builder:
       properties:
@@ -175,7 +180,7 @@ x-google-marketplace:
 
     admission-controller:
       properties:
-        k8ssandra.admissionControllerDatastax.image.repository:
+        admiss-ctrl-image-repository:
           type: FULL
 
   deployerServiceAccount:
@@ -206,13 +211,13 @@ properties:
     x-google-marketplace:
       type: REPORTING_SECRET
 
-  admiss-ctrl-datastax:
+  admiss-ctrl-sa:
     type: string
     x-google-marketplace:
       type: SERVICE_ACCOUNT
       serviceAccount:
         description: >
-          service account used for the admission controller component of k8ssandra-mp
+          service account for admission controller
         roles:
           - type: ClusterRole
             rulesType: CUSTOM
@@ -221,28 +226,13 @@ properties:
                 resources: ["cassandradatacenters", "deployments", "services", "secrets"]
                 verbs: ["list", "delete", "patch", "update"]
 
-  grafanaServiceAccount:
+  cass-operator-sa:
     type: string
     x-google-marketplace:
       type: SERVICE_ACCOUNT
       serviceAccount:
         description: >
-          service account used for the grafana component of k8ssandra
-        roles:
-          - type: Role
-            rulesType: CUSTOM
-            rules:
-              - apiGroups: ['extensions', '']
-                resources: ['podsecuritypolicies', 'secrets', 'configmaps']
-                verbs: ['use', 'get', 'list', 'watch']
-
-  cass-operatorServiceAccount:
-    type: string
-    x-google-marketplace:
-      type: SERVICE_ACCOUNT
-      serviceAccount:
-        description: >
-          service account used for the cass-operator component of k8ssandra
+          service account for cass-operator
         roles:
           - type: Role
             rulesType: CUSTOM
@@ -281,13 +271,13 @@ properties:
                 resources: ['nodes','persistentvolumes']
                 verbs: ['get','watch','list']
 
-  kube-promethe-admissionServiceAccount:
+  webhook-admiss-sa:
     type: string
     x-google-marketplace:
       type: SERVICE_ACCOUNT
       serviceAccount:
         description: >
-          service account used for kube-promethe-admission component of k8ssandra
+          service account for kube-prometheus-stack webhooks-admission
         roles:
           - type: Role
             rulesType: CUSTOM
@@ -305,13 +295,28 @@ properties:
                 resources: ['podsecuritypolicies']
                 verbs: ['use']
 
-  kube-promethe-operatorServiceAccount:
+  grafana-sa:
     type: string
     x-google-marketplace:
       type: SERVICE_ACCOUNT
       serviceAccount:
         description: >
-          service account used for the kube-promethe-operator component of k8ssandra
+          service account for kube-prometheus-stack grafana
+        roles:
+          - type: Role
+            rulesType: CUSTOM
+            rules:
+              - apiGroups: ['extensions', '']
+                resources: ['podsecuritypolicies', 'secrets', 'configmaps']
+                verbs: ['use', 'get', 'list', 'watch']
+
+  prom-operator-sa:
+    type: string
+    x-google-marketplace:
+      type: SERVICE_ACCOUNT
+      serviceAccount:
+        description: >
+          service account for kube-prometheus-stack prometheusOperator
         roles:
           - type: ClusterRole
             rulesType: CUSTOM
@@ -344,13 +349,13 @@ properties:
                 resources: ['podsecuritypolicies']
                 verbs: ['use']
 
-  kube-promethe-prometheusServiceAccount:
+  prometheus-sa:
     type: string
     x-google-marketplace:
       type: SERVICE_ACCOUNT
       serviceAccount:
         description: >
-          service account used for the kube-promethe-prometheus component of k8ssandra
+          service account for kube-prometheus-stack prometheus
         roles:
           - type: ClusterRole
             rulesType: CUSTOM

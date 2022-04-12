@@ -10,4 +10,4 @@ patches:
       kind: CustomResourceDefinition
 
 resources:
-  - $CHART_FILE_NAME
+  - chart.yaml

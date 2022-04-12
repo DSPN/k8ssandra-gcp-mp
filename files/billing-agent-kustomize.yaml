@@ -6,10 +6,10 @@ patches:
       kind: CassandraDatacenter
     patch: |-
       - op: add
-        path: /spec/podTemplateSpec/spec/initContainers/-
+        path: /spec/podTemplateSpec/spec/containers/-
         value:
-          name: ubbagent
-          image: imageUbbagent
+          name: $NAME-ubbagent
+          image: $UBBAGENT_IMAGE
           env:
             - name: AGENT_CONFIG_FILE
               value: "/etc/ubbagent/config.yaml"
@@ -18,12 +18,12 @@ patches:
             - name: AGENT_ENCODED_KEY
               valueFrom:
                 secretKeyRef:
-                  name: reportingSecret
+                  name: $REPORTING_SECRET
                   key: reporting-key
             - name: AGENT_CONSUMER_ID
               valueFrom:
                 secretKeyRef:
-                  name: reportingSecret
+                  name: $REPORTING_SECRET
                   key: consumer-id
           volumeMounts:
             - name: ubbagent-config
@@ -36,7 +36,7 @@ patches:
         value:
           name: ubbagent-config
           configMap:
-            name: ubbagent-config
+            name: $NAME-ubbagent-config
 
 resources:
-  - m.yaml
+  - chart.yaml
