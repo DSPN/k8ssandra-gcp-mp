@@ -1,4 +1,4 @@
-admiss-ctrl-image-repository: "gcr.io/gke-launcher-dev/k8ssandra-mp/admission-controller:1.3.2-k8ssandra1.3.1b2"
+admiss-ctrl-image-repository: null
 ubbagent-image-repository: null
 k8ssandra:
   cassandra:
