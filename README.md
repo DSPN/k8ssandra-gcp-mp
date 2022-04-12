@@ -36,7 +36,7 @@ Create a new cluster from the command line:
 export CLUSTER=k8ssandra-mp-cluster
 export CLUSTER_SIZE=3
 export ZONE=us-west1-a
-export RELEASE_CHANNEL=rapid
+export RELEASE_CHANNEL=regular
 gcloud container clusters create "${CLUSTER}" \
     --zone "$ZONE" \
     --release-channel "$RELEASE_CHANNEL" \

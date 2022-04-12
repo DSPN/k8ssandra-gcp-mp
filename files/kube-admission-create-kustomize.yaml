@@ -8,14 +8,14 @@ patches:
         value: "$NAME-init-only"
     target:
       kind: Job
-      name: "$NAME-$KUBE_PROM_NAME-admission-create"
+      name: "$PROM_NAME-admission-create"
   - patch: |-
       - op: replace
         path: /spec/template/metadata/labels/app.kubernetes.io~1name
         value: "$NAME-init-only"
     target:
       kind: Job
-      name: "$NAME-$KUBE_PROM_NAME-admission-patch"
+      name: "$PROM_NAME-admission-patch"
 
 resources:
-  - $CHART_FILE_NAME
+  - chart.yaml

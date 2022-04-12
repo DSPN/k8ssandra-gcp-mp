@@ -32,7 +32,7 @@ spec:
       serviceAccountName: "{{ .Release.Name }}-admiss-ctrl-datastax"
       containers:
         - name: admiss-ctrl-datastax
-          image: "{{ .Values.k8ssandra.admissionControllerDatastax.image.repository }}"
+          image: {{ index .Values "admiss-ctrl-image-repository" }}
           imagePullPolicy: Always
           ports:
             - containerPort: 4443

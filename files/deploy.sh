@@ -61,11 +61,27 @@ app_api_version=$(kubectl get "applications.app.k8s.io/$NAME" \
 
 create_manifests.sh
 
-KUBE_PROM_NAME="$(grep -E '^.*name: .*-kube-.*-operator$' /data/manifest-expanded/chart.yaml | tail -n1 | awk -F ' ' '{print $2}')"
-KUBE_PROM_NAME="${KUBE_PROM_NAME#${NAME}-}"
-KUBE_PROM_NAME="${KUBE_PROM_NAME%-operator}"
-echo $KUBE_PROM_NAME
-export KUBE_PROM_NAME
+export ADMISS_CTRL_SA="$(get-service-account.sh 'admiss-ctrl-sa')"
+export CASS_OPERATOR_SA="$(get-service-account.sh 'cass-operator-sa')"
+export WEBHOOK_ADMISS_SA="$(get-service-account.sh 'webhook-admiss-sa')"
+export GRAFANA_SA="$(get-service-account.sh 'grafana-sa')"
+export PROM_OPERATOR_SA="$(get-service-account.sh 'prom-operator-sa')"
+export PROMETHEUS_SA="$(get-service-account.sh 'prometheus-sa')"
+
+export ADMISS_CTRL_DEPLOYMENT="$(/usr/bin/env python3 /app/get-resource-name.py 'admiss-ctrl')"
+export CASS_OPERATOR_DEPLOYMENT="$(/usr/bin/env python3 /app/get-resource-name.py 'cass-operator')"
+export WEBHOOK_ADMISS_CREATE_JOB="$(/usr/bin/env python3 /app/get-resource-name.py 'admiss-create')"
+export WEBHOOK_ADMISS_PATCH_JOB="$(/usr/bin/env python3 /app/get-resource-name.py 'admiss-patch')"
+export GRAFANA_DEPLOYMENT="$(/usr/bin/env python3 /app/get-resource-name.py 'grafana')"
+export PROM_OPERATOR_DEPLOYMENT="$(/usr/bin/env python3 /app/get-resource-name.py 'prom-operator')"
+export PROMETHEUS_DEPLOYMENT="$(/usr/bin/env python3 /app/get-resource-name.py 'prometheus')"
+export CASS_OPERATOR_ORIG_SA="$(/usr/bin/env python3 /app/get-resource-name.py 'cass-operator-sa')"
+
+export PROM_NAME="${PROMETHEUS_DEPLOYMENT%%-prometheus}"
+echo "$PROM_NAME"
+
+export UBBAGENT_IMAGE="$(grep '^ubbagent-image-repository:' /data/final_values.yaml | awk -F ' ' '{print $2}')"
+export REPORTING_SECRET="$(grep '^reportingSecret:' /data/final_values.yaml | awk -F ' ' '{print $2}')"
 
 # Create the medusa gcp key if medusa is enabled
 if grep -E "k8ssandra.medusa.enabled.*true" /data/final_values.yaml; then
@@ -77,27 +93,37 @@ if grep -E "k8ssandra.medusa.enabled.*true" /data/final_values.yaml; then
     kubectl create secret generic prod-k8ssandra-mp-medusa-key --from-file=medusa_gcp_key.json=/app/medusa-gcp-key
 fi
 
-CHART_FILE_NAME=chart.yaml envsubst \
+envsubst \
     < /app/labels_and_service_accounts_kustomize.yaml \
     > /data/manifest-expanded/kustomization.yaml
 kustomize build /data/manifest-expanded > /data/manifest-expanded/chart-kustomized.yaml
+mv /data/manifest-expanded/chart-kustomized.yaml /data/manifest-expanded/chart.yaml
 
-CHART_FILE_NAME=chart-kustomized.yaml envsubst \
+envsubst \
     < /app/excluded_resources_kustomize.yaml \
     > /data/manifest-expanded/kustomization.yaml
-kustomize build /data/manifest-expanded > /data/manifest-expanded/chart-kustomized2.yaml
+kustomize build /data/manifest-expanded > /data/manifest-expanded/chart-kustomized.yaml
+mv /data/manifest-expanded/chart-kustomized.yaml /data/manifest-expanded/chart.yaml
 
-CHART_FILE_NAME=chart-kustomized2.yaml envsubst \
+envsubst \
     < /app/kube-admission-create-kustomize.yaml \
     > /data/manifest-expanded/kustomization.yaml
-kustomize build /data/manifest-expanded > /data/manifest-expanded/chart-kustomized3.yaml
+kustomize build /data/manifest-expanded > /data/manifest-expanded/chart-kustomized.yaml
+mv /data/manifest-expanded/chart-kustomized.yaml /data/manifest-expanded/chart.yaml
 
-CHART_FILE_NAME=chart-kustomized3.yaml envsubst \
+envsubst \
     < /app/crds_kustomize.yaml \
     > /data/manifest-expanded/kustomization.yaml
-kustomize build /data/manifest-expanded > /data/manifest-expanded/chart.yaml
+kustomize build /data/manifest-expanded > /data/manifest-expanded/chart-kustomized.yaml
+mv /data/manifest-expanded/chart-kustomized.yaml /data/manifest-expanded/chart.yaml
 
-rm /data/manifest-expanded/{kustomization,chart-kustomized,chart-kustomized2,chart-kustomized3}.yaml
+envsubst \
+    < /app/billing-agent-kustomize.yaml \
+    > /data/manifest-expanded/kustomization.yaml
+kustomize build /data/manifest-expanded > /data/manifest-expanded/chart-kustomized.yaml
+mv /data/manifest-expanded/chart-kustomized.yaml /data/manifest-expanded/chart.yaml
+
+rm /data/manifest-expanded/kustomization.yaml
 
 # Remove unneeded version strings in the chart template
 sed -i 's|^  version: 1.3.*$||' /data/manifest-expanded/chart.yaml
@@ -159,7 +185,7 @@ kubectl apply  --namespace="$NAMESPACE" \
                --selector is-crd=no,excluded-resource=no
 
 sleep 10
-admission_controller_deployment_uid=$(kubectl get "deployments/$NAME-admiss-ctrl-datastax" \
+admission_controller_deployment_uid=$(kubectl get "deployments/$ADMISS_CTRL_DEPLOYMENT" \
   --namespace="$NAMESPACE" \
   --output=jsonpath='{.metadata.uid}')
 
@@ -205,7 +231,7 @@ kubectl apply --namespace="$NAMESPACE" -f /app/vwc.yaml
 
 # restart the admission controller deployment so the secret containing the
 # new tls certs will take affect.
-kubectl rollout --namespace="$NAMESPACE" restart deployment $NAME-admiss-ctrl-datastax
+kubectl rollout --namespace="$NAMESPACE" restart deployment $ADMISS_CTRL_DEPLOYMENT
 
 patch_assembly_phase.sh --status="Success"
 

@@ -159,9 +159,11 @@ class ImagePusher:
                 image_ref = helpers.dev_staging_repo
             else:
                 image_ref = f'{helpers.dev_staging_repo}/{name}'
+            version, short_version = helpers.get_versions()
             cp = helpers.run(
                 f"""
-                docker image push --all-tags {image_ref}
+                docker image push {image_ref}:{version}
+                docker image push {image_ref}:{short_version}
                 """
                 )
             if cp.returncode != 0:
