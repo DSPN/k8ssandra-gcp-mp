@@ -38,6 +38,7 @@ image_map = {
     'prometheus-operator': 'quay.io/prometheus-operator/prometheus-operator:v0.44.0',
     'prometheus': 'quay.io/prometheus/prometheus:v2.22.1',
     'admission-controller': 'tawamudu/admission-controller:1',
+    'ubbagent': 'tawamudu/ubbagent:1',
 }
 
 class ImageFinder:
