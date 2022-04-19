@@ -17,7 +17,7 @@ data:
     # Metric names should match verbatim the identifiers created
     # during pricing setup.
     metrics:
-    - name: k8ssandra-marketplace.mp-datastax-public.appspot.com/per_cassandra_workload
+    - name: per_cassandra_workload
       type: int
 
       # The endpoints section of a metric defines which endpoints the
@@ -47,7 +47,7 @@ data:
     sources:
     - name: instance_time_heartbeat
       heartbeat:
-        metric: k8ssandra-marketplace.mp-datastax-public.appspot.com/per_cassandra_workload
+        metric: per_cassandra_workload
         intervalSeconds: 3600
         value:
           int64Value: 1
