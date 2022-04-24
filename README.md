@@ -40,7 +40,7 @@ export RELEASE_CHANNEL=regular
 gcloud container clusters create "${CLUSTER}" \
     --zone "$ZONE" \
     --release-channel "$RELEASE_CHANNEL" \
-    --machine-type e2-standard-2 \
+    --machine-type n2-standard-2 \
     --num-nodes "$CLUSTER_SIZE"
 ```
 
