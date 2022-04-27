@@ -4,10 +4,10 @@ Built on the rock-solid Apache Cassandra® NoSQL database, K8ssandra brings toge
 # Installation
 
 ## Quick install with Google Cloud Marketplace
-Get up and running with a few clicks! Install the k8ssandra marketplace app to a Google Kubernetes Engine cluster by using Google Cloud Marketplace. Follow the [[on-screen-instructions]](https://google.com)
+Get up and running with a few clicks! Install the k8ssandra marketplace app to a Google Kubernetes Engine cluster by using Google Cloud Marketplace. Follow the [on-screen-instructions](https://console.cloud.google.com/marketplace/details/datastax-public/k8ssandra-marketplace)
 
 ## Command-line instructions
-You can use [Google Cloud Shell] or a local workstation to follow the steps below.
+You can use [Google Cloud Shell](https://console.cloud.google.com/home/dashboard?cloudshell=true&_ga=2.56087010.819465746.1651092702-2069899356.1630444315) or a local workstation to follow the steps below.
 
 ### Prerequisites
 
