@@ -161,9 +161,9 @@ kubectl create namespace "${NAMESPACE}"
 
 ```bash
 #service account:
-kubectl create serviceaccount "${APP_INSTANCE_NAME}-grafanaserviceaccount" \
+kubectl create serviceaccount "${APP_INSTANCE_NAME}-grafana-sa" \
     --namespace="${NAMESPACE}"
-kubectl label serviceaccounts "${APP_INSTANCE_NAME}-grafanaserviceaccount" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
+kubectl label serviceaccounts "${APP_INSTANCE_NAME}-grafana-sa" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
     --namespace="${NAMESPACE}"
 
 #role:
@@ -173,7 +173,7 @@ kind: Role
 metadata:
   labels:
     app.kubernetes.io/name: ${NAMESPACE}
-  name: ${APP_INSTANCE_NAME}:grafanaServiceAccount
+  name: ${APP_INSTANCE_NAME}:grafana-sa
   namespace: ${NAMESPACE}
 rules:
 - apiGroups:
@@ -191,11 +191,11 @@ rules:
 EOF
 
 #rolebinding:
-kubectl create rolebinding "${APP_INSTANCE_NAME}:grafanaServiceAccount" \
+kubectl create rolebinding "${APP_INSTANCE_NAME}:grafana-sa" \
     --namespace="${NAMESPACE}" \
-    --role="${APP_INSTANCE_NAME}:grafanaServiceAccount" \
-    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-grafanaserviceaccount"
-kubectl label rolebindings "${APP_INSTANCE_NAME}:grafanaServiceAccount" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
+    --role="${APP_INSTANCE_NAME}:grafana-sa" \
+    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-grafana-sa"
+kubectl label rolebindings "${APP_INSTANCE_NAME}:grafana-sa" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
     --namespace="${NAMESPACE}"
 ```
 
@@ -203,9 +203,9 @@ kubectl label rolebindings "${APP_INSTANCE_NAME}:grafanaServiceAccount" app.kube
 
 ```bash
 #service account:
-kubectl create serviceaccount "${APP_INSTANCE_NAME}-cass-operatorserviceaccount" \
+kubectl create serviceaccount "${APP_INSTANCE_NAME}-cass-operator-sa" \
     --namespace="${NAMESPACE}"
-kubectl label serviceaccounts "${APP_INSTANCE_NAME}-cass-operatorserviceaccount" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
+kubectl label serviceaccounts "${APP_INSTANCE_NAME}-cass-operator-sa" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
     --namespace="${NAMESPACE}"
 
 #role:
@@ -215,7 +215,7 @@ kind: Role
 metadata:
   labels:
     app.kubernetes.io/name: ${APP_INSTANCE_NAME}
-  name: "${APP_INSTANCE_NAME}:cass-operatorServiceAccount"
+  name: "${APP_INSTANCE_NAME}:cass-operator-sa"
   namespace: "${NAMESPACE}"
 rules:
 - apiGroups:
@@ -285,11 +285,11 @@ rules:
 EOF
 
 # rolebinding:
-kubectl create rolebinding "${APP_INSTANCE_NAME}:cass-operatorServiceAccount" \
+kubectl create rolebinding "${APP_INSTANCE_NAME}:cass-operator-sa" \
     --namespace="${NAMESPACE}" \
-    --role="${APP_INSTANCE_NAME}:cass-operatorServiceAccount" \
-    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-cass-operatorserviceaccount"
-kubectl label rolebindings "${APP_INSTANCE_NAME}:cass-operatorServiceAccount" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
+    --role="${APP_INSTANCE_NAME}:cass-operator-sa" \
+    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-cass-operator-sa"
+kubectl label rolebindings "${APP_INSTANCE_NAME}:cass-operator-sa" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
     --namespace="${NAMESPACE}"
 
 # clusterrole:
@@ -299,7 +299,7 @@ kind: ClusterRole
 metadata:
   labels:
     app.kubernetes.io/name: ${APP_INSTANCE_NAME}
-  name: "${APP_INSTANCE_NAME}:cass-operatorServiceAccount"
+  name: "${APP_INSTANCE_NAME}:cass-operator-sa"
 rules:
 - apiGroups:
   - ""
@@ -313,11 +313,11 @@ rules:
 EOF
 
 # clusterrolebinding:
-kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:cass-operatorServiceAccount" \
+kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:cass-operator-sa" \
     --namespace="${NAMESPACE}" \
-    --clusterrole="${APP_INSTANCE_NAME}:cass-operatorServiceAccount" \
-    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-cass-operatorserviceaccount"
-kubectl label clusterrolebindings "${APP_INSTANCE_NAME}:cass-operatorServiceAccount" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
+    --clusterrole="${APP_INSTANCE_NAME}:cass-operator-sa" \
+    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-cass-operator-sa"
+kubectl label clusterrolebindings "${APP_INSTANCE_NAME}:cass-operator-sa" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
     --namespace="${NAMESPACE}"
 ```
 
@@ -325,9 +325,9 @@ kubectl label clusterrolebindings "${APP_INSTANCE_NAME}:cass-operatorServiceAcco
 
 ```bash
 # service account:
-kubectl create serviceaccount "${APP_INSTANCE_NAME}-kube-promethe-admissionserviceaccount" \
+kubectl create serviceaccount "${APP_INSTANCE_NAME}-webhook-admiss-sa" \
     --namespace="${NAMESPACE}"
-kubectl label serviceaccounts "${APP_INSTANCE_NAME}-kube-promethe-admissionserviceaccount" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
+kubectl label serviceaccounts "${APP_INSTANCE_NAME}-webhook-admiss-sa" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
     --namespace="${NAMESPACE}"
 
 # role:
@@ -337,7 +337,7 @@ kind: Role
 metadata:
   labels:
     app.kubernetes.io/name: ${APP_INSTANCE_NAME}
-  name: ${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount
+  name: ${APP_INSTANCE_NAME}:webhook-admiss-sa
   namespace: ${NAMESPACE}
 rules:
 - apiGroups:
@@ -350,11 +350,11 @@ rules:
 EOF
 
 # rolebinding:
-kubectl create rolebinding "${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount" \
+kubectl create rolebinding "${APP_INSTANCE_NAME}:webhook-admiss-sa" \
     --namespace="${NAMESPACE}" \
-    --role="${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount" \
-    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-kube-promethe-admissionserviceaccount"
-kubectl label rolebindings "${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
+    --role="${APP_INSTANCE_NAME}:webhook-admiss-sa" \
+    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-webhook-admiss-sa"
+kubectl label rolebindings "${APP_INSTANCE_NAME}:webhook-admiss-sa" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
     --namespace="${NAMESPACE}"
 
 # clusterrole:
@@ -365,7 +365,7 @@ metadata:
   labels:
     app.kubernetes.io/name: ${APP_INSTANCE_NAME}
     app.kubernetes.io/namespace: "${NAMESPACE}"
-  name: ${NAMESPACE}:${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount
+  name: ${NAMESPACE}:${APP_INSTANCE_NAME}:webhook-admiss-sa
 rules:
 - apiGroups:
   - admissionregistration.k8s.io
@@ -384,11 +384,11 @@ rules:
 EOF
 
 # clusterrolebinding:
-kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount" \
+kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:webhook-admiss-sa" \
     --namespace="${NAMESPACE}" \
-    --clusterrole="${NAMESPACE}:${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount" \
-    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-kube-promethe-admissionserviceaccount"
-kubectl label clusterrolebindings "${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
+    --clusterrole="${NAMESPACE}:${APP_INSTANCE_NAME}:webhook-admiss-sa" \
+    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-webhook-admiss-sa"
+kubectl label clusterrolebindings "${APP_INSTANCE_NAME}:webhook-admiss-sa" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
     --namespace="${NAMESPACE}"
 ```
 
@@ -396,9 +396,9 @@ kubectl label clusterrolebindings "${APP_INSTANCE_NAME}:kube-promethe-admissionS
 
 ```bash
 # service account:
-kubectl create serviceaccount "${APP_INSTANCE_NAME}-kube-promethe-operatorserviceaccount" \
+kubectl create serviceaccount "${APP_INSTANCE_NAME}-prom-operator-sa" \
     --namespace="${NAMESPACE}"
-kubectl label serviceaccount "${APP_INSTANCE_NAME}-kube-promethe-operatorserviceaccount" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
+kubectl label serviceaccount "${APP_INSTANCE_NAME}-prom-operator-sa" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
     --namespace="${NAMESPACE}"
 
 # clusterrole:
@@ -409,7 +409,7 @@ metadata:
   labels:
     app.kubernetes.io/name: ${APP_INSTANCE_NAME}
     app.kubernetes.io/namespace: "${NAMESPACE}"
-  name: ${NAMESPACE}:${APP_INSTANCE_NAME}:kube-promethe-operatorServiceAccount
+  name: ${NAMESPACE}:${APP_INSTANCE_NAME}:prom-operator-sa
 rules:
 - apiGroups:
   - monitoring.coreos.com
@@ -490,11 +490,11 @@ rules:
 EOF
 
 # clusterrolebinding:
-kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:kube-promethe-operatorServiceAccount" \
+kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:prom-operator-sa" \
     --namespace="${NAMESPACE}" \
-    --clusterrole="${NAMESPACE}:${APP_INSTANCE_NAME}:kube-promethe-operatorServiceAccount" \
-    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-kube-promethe-operatorserviceaccount"
-kubectl label clusterrolebindings "${APP_INSTANCE_NAME}:kube-promethe-operatorServiceAccount" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
+    --clusterrole="${NAMESPACE}:${APP_INSTANCE_NAME}:prom-operator-sa" \
+    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-prom-operator-sa"
+kubectl label clusterrolebindings "${APP_INSTANCE_NAME}:prom-operator-sa" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
     --namespace="${NAMESPACE}"
 ```
 
@@ -502,9 +502,9 @@ kubectl label clusterrolebindings "${APP_INSTANCE_NAME}:kube-promethe-operatorSe
 
 ```bash
 # service account:
-kubectl create serviceaccount "${APP_INSTANCE_NAME}-kube-promethe-prometheusserviceaccount" \
+kubectl create serviceaccount "${APP_INSTANCE_NAME}-prometheus-sa" \
     --namespace="${NAMESPACE}"
-kubectl label serviceaccounts "${APP_INSTANCE_NAME}-kube-promethe-prometheusserviceaccount" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
+kubectl label serviceaccounts "${APP_INSTANCE_NAME}-prometheus-sa" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
     --namespace="${NAMESPACE}"
 
 # clusterrole:
@@ -515,7 +515,7 @@ metadata:
   labels:
     app.kubernetes.io/name: "${APP_INSTANCE_NAME}"
     app.kubernetes.io/namespace: "${NAMESPACE}" 
-  name: ${NAMESPACE}:${APP_INSTANCE_NAME}:kube-promethe-prometheusServiceAccount
+  name: ${NAMESPACE}:${APP_INSTANCE_NAME}:prometheus-sa
 rules:
 - apiGroups:
   - ""
@@ -546,11 +546,11 @@ rules:
 EOF
 
 # clusterrolebinding:
-kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:kube-promethe-prometheusServiceAccount" \
+kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:prometheus-sa" \
     --namespace="${NAMESPACE}" \
-    --clusterrole="${NAMESPACE}:${APP_INSTANCE_NAME}:kube-promethe-prometheusServiceAccount" \
-    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-kube-promethe-prometheusserviceaccount"
-kubectl label clusterrolebindings "${APP_INSTANCE_NAME}:kube-promethe-prometheusServiceAccount" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
+    --clusterrole="${NAMESPACE}:${APP_INSTANCE_NAME}:prometheus-sa" \
+    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-prometheus-sa"
+kubectl label clusterrolebindings "${APP_INSTANCE_NAME}:prometheus-sa" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
     --namespace="${NAMESPACE}"
 ```
 

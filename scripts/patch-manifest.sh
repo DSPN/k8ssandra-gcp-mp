@@ -34,6 +34,23 @@ cd "${work_dir}"
 
 cp "${script_dir}"/../"${app_instance_name}_manifest.yaml" ./chart.yaml
 
+export CASS_OPERATOR_SA="${app_instance_name}-cass-operator-sa"
+export WEBHOOK_ADMISS_SA="${app_instance_name}-webhook-admiss-sa"
+export GRAFANA_SA="${app_instance_name}-grafana-sa"
+export PROM_OPERATOR_SA="${app_instance_name}-prom-operator-sa"
+export PROMETHEUS_SA="${app_instance_name}-prometheus-sa"
+
+export CASS_OPERATOR_DEPLOYMENT="${app_instance_name}-cass-operator"
+export WEBHOOK_ADMISS_CREATE_JOB="${app_instance_name}-prom-admiss-create"
+export WEBHOOK_ADMISS_PATCH_JOB="${app_instance_name}-prom-admiss-patch"
+export GRAFANA_DEPLOYMENT="${app_instance_name}-grafana"
+export PROM_OPERATOR_DEPLOYMENT="${app_instance_name}-prom-operator"
+export PROMETHEUS_DEPLOYMENT="${app_instance_name}-prom-prometheus"
+export CASS_OPERATOR_ORIG_SA="${app_instance_name}-cass-operator"
+
+export PROM_NAME="${PROMETHEUS_DEPLOYMENT%%-prometheus}"
+echo "$PROM_NAME"
+
 # Apply labels and service account modifications
 
 NAME="${app_instance_name}" envsubst \
