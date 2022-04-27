@@ -32,28 +32,32 @@ chart_file_name="${app_instance_name}_manifest.yaml"
 
 cd "${work_dir}"
 
-cp "${script_dir}"/../"${app_instance_name}_manifest.yaml" .
+cp "${script_dir}"/../"${app_instance_name}_manifest.yaml" ./chart.yaml
 
 # Apply labels and service account modifications
 
-CHART_FILE_NAME="${chart_file_name}" NAME="${app_instance_name}" envsubst \
+NAME="${app_instance_name}" envsubst \
     < "${script_dir}"/../files/labels_and_service_accounts_kustomize.yaml \
     > ./kustomization.yaml
 kustomize build . > ./chart-kustomized.yaml
+mv ./chart-kustomized.yaml ./chart.yaml
 
 # Apply excluded resources modifications
 
-CHART_FILE_NAME=chart-kustomized.yaml NAME="${app_instance_name}" envsubst \
+NAME="${app_instance_name}" envsubst \
     < "${script_dir}"/../files/excluded_resources_kustomize.yaml \
     > ./kustomization.yaml
-kustomize build . > ./chart-kustomized2.yaml
+kustomize build . > ./chart-kustomized.yaml
+mv ./chart-kustomized.yaml ./chart.yaml
 
 # Apply CRD designation to all of the CRDS
 
-CHART_FILE_NAME=chart-kustomized2.yaml NAME="${app_instance_name}" envsubst \
+NAME="${app_instance_name}" envsubst \
     < "${script_dir}"/../files/crds_kustomize.yaml \
     > ./kustomization.yaml
-kustomize build . > "${script_dir}"/../"${chart_file_name}"
+kustomize build . > ./chart-kustomized.yaml
+
+mv ./chart-kustomized.yaml "${script_dir}"/../"${chart_file_name}"
 
 # Remove unneeded version strings
 
