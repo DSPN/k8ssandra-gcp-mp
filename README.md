@@ -559,7 +559,7 @@ kubectl label clusterrolebindings "${APP_INSTANCE_NAME}:kube-promethe-prometheus
 Use `helm template` to expand the template. We recommend that you save the expanded manifest file for future updates to the application.
 
 ```bash
-helm template "${APP_INSTANCE_NAME}" chart/k8ssandra-mp \
+helm template "${APP_INSTANCE_NAME}" chart/k8ssandra-marketplace \
     --namespace "${NAMESPACE}" \
     --include-crds \
     --set k8ssandra.cassandra.image.registry="${REGISTRY}" \
