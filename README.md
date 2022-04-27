@@ -563,7 +563,7 @@ helm template "${APP_INSTANCE_NAME}" chart/k8ssandra-marketplace \
     --namespace "${NAMESPACE}" \
     --include-crds \
     --set k8ssandra.cassandra.image.registry="${REGISTRY}" \
-    --set k8ssandra.cassandra.image.repository="${REPOSITORY}:${TAG}" \
+    --set k8ssandra.cassandra.image.repository="${REPOSITORY}" \
     --set k8ssandra.cassandra.image.tag="${TAG}" \
     --set k8ssandra.cassandra.configBuilder.image.registry="${REGISTRY}" \
     --set k8ssandra.cassandra.configBuilder.image.repository="${REPOSITORY}/${IMAGE_CASSANDRA_CONFIG_BUILDER}" \
