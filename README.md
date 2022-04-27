@@ -108,7 +108,6 @@ Configure the container images:
 
 ```bash
 export IMAGE_CASS_OPERATOR="cass-operator"
-export IMAGE_CASSANDRA="cassandra"
 export IMAGE_CASSANDRA_CONFIG_BUILDER="cassandra-config-builder"
 export IMAGE_CASSANDRA_JMX_CREDENTIALS="cassandra-jmx-credentials"
 export IMAGE_CASSANDRA_SYSTEM_LOGGER="cassandra-system-logger"
@@ -126,6 +125,7 @@ export IMAGE_REAPER="reaper"
 export IMAGE_REAPER_OPERATOR="reaper-operator"
 export IMAGE_STARGATE="stargate"
 export IMAGE_STARGATE_WAIT_FOR_CASSANDRA="stargate-wait-for-cassandra"
+export IMAGE_ADMISSION_CONTROLLER="admission-controller"
 ```
 
 #### Create a suitable storage class
@@ -563,7 +563,7 @@ helm template "${APP_INSTANCE_NAME}" chart/k8ssandra-marketplace \
     --namespace "${NAMESPACE}" \
     --include-crds \
     --set k8ssandra.cassandra.image.registry="${REGISTRY}" \
-    --set k8ssandra.cassandra.image.repository="${REPOSITORY}/${IMAGE_CASSANDRA}" \
+    --set k8ssandra.cassandra.image.repository="${REPOSITORY}:${TAG}" \
     --set k8ssandra.cassandra.image.tag="${TAG}" \
     --set k8ssandra.cassandra.configBuilder.image.registry="${REGISTRY}" \
     --set k8ssandra.cassandra.configBuilder.image.repository="${REPOSITORY}/${IMAGE_CASSANDRA_CONFIG_BUILDER}" \
@@ -613,6 +613,7 @@ helm template "${APP_INSTANCE_NAME}" chart/k8ssandra-marketplace \
     --set k8ssandra.kube-prometheus-stack.grafana.image.tag="${TAG}" \
     --set k8ssandra.kube-prometheus-stack.grafana.sidecar.image.repository="${REGISTRY}/${REPOSITORY}/${IMAGE_GRAFANA_SIDECAR}" \
     --set k8ssandra.kube-prometheus-stack.grafana.sidecar.image.tag="${TAG}" \
+    --set admiss-ctrl-image-repository="${REGISTRY}/${IMAGE_ADMISSION_CONTROLLER}:${TAG}" \
     --set k8ssandra.cassandra.cassandraLibDirVolume.storageClass="${DEFAULT_STORAGE_CLASS}" \
     --set k8ssandra.cassandra.cassandraLibDirVolume.size="1Gi" \
     --set k8ssandra.cassandra.allowMultipleNodesPerWorker="true" \
