@@ -82,7 +82,7 @@ cd k8ssandra-gcp-mp
 
 ```bash
 helm repo add k8ssandra https://helm.k8ssandra.io/stable
-helm dependency build chart/k8ssandra-mp
+helm dependency build chart/k8ssandra-marketplace
 ```
 
 #### Configure the app with environment variables
