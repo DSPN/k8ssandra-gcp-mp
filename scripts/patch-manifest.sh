@@ -78,6 +78,6 @@ mv ./chart-kustomized.yaml "${script_dir}"/../"${chart_file_name}"
 
 # Remove unneeded version strings
 
-sed -i '' 's|^ *version: 1\.3$||g' "${script_dir}"/../"${chart_file_name}"
-sed -i '' 's|^ *app.kubernetes\.io/version: "1\.3".*$||g' "${script_dir}"/../"${chart_file_name}"
+sed -i'' 's|^ *version: 1\.3$||g' "${script_dir}"/../"${chart_file_name}"
+sed -i'' 's|^ *app.kubernetes\.io/version: "1\.3".*$||g' "${script_dir}"/../"${chart_file_name}"
 
