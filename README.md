@@ -94,7 +94,7 @@ helm dependency build chart/k8ssandra-marketplace
 Choose an instance name, namespace, and default storage class for the app. In most cases you can use the `default` namespace.
 
 ```bash
-export APP_INSTANCE_NAME=k8ssandra-mp
+export APP_INSTANCE_NAME=k8ssandra-marketplace
 export NAMESPACE=default
 export DEFAULT_STORAGE_CLASS=k8ssandra-storage
 export DC_SIZE=3
@@ -165,7 +165,7 @@ kubectl create namespace "${NAMESPACE}"
 In a previous step, you downloaded and applied the license key to your cluster. In this step, you'll extract the name of the kubernetes secret that contains that key and make it available for use in the helm chart templates.
 
 ```bash
-REPORTING_SECRET="$(kubectl get secret | grep \"^${APP_INSTANCE_NAME}-license\" | awk -F' ' '{print $1}')"
+REPORTING_SECRET="$(kubectl --namespace="${NAMESPACE}" get secret | grep \"^${APP_INSTANCE_NAME}-license\" | awk -F' ' '{print $1}')"
 export REPORTING_SECRET
 ```
 
@@ -790,7 +790,7 @@ For more operations please see the official k8ssandra getting started docs:
 Set your installation name and Kubernetes namespace:
 
 ```bash
-export APP_INSTANCE_NAME=k8ssandra-mp
+export APP_INSTANCE_NAME=k8ssandra-marketplace
 export NAMESPACE=default
 ```
 
