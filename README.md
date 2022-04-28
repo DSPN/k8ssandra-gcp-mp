@@ -783,7 +783,7 @@ For more operations please see the official k8ssandra getting started docs:
 
 # Uninstall the Application
 
-## If you installed vai the Google Cloud Platform Console
+## If you installed via the Google Cloud Platform Console
 
 1. In the GCP Console, open [Kubernetes Applications](https://console.cloud.google.com/kubernetes/application).
 2. From the list of applications, click **k8ssandra-marketplace**.
