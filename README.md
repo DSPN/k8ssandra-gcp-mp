@@ -689,6 +689,12 @@ kubectl apply -f "${APP_INSTANCE_NAME}_manifest.yaml" \
     --selector excluded-resource=no,is-crd=no
 ```
 
+As the last step, you need to run a prepared script to patch the admission controller resource:
+
+```bash
+./scripts/patch-admission-controller.sh "${APP_INSTANCE_NAME}"
+```
+
 #### Wait for the Application components to become available
 
 It will take about 10 or 15 minutes for all the components of k8ssandra to become fully available and ready to use. You can follow the status of the install process with the following command:
