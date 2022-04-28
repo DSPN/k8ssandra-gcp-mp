@@ -131,6 +131,7 @@ export IMAGE_STARGATE="stargate"
 export IMAGE_STARGATE_WAIT_FOR_CASSANDRA="stargate-wait-for-cassandra"
 export IMAGE_ADMISSION_CONTROLLER="admission-controller"
 export IMAGE_UBBAGENT="ubbagent"
+export UBBAGENT_IMAGE="${IMAGE_UBBAGENT}"
 ```
 
 #### Create a suitable storage class
