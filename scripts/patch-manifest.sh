@@ -73,6 +73,13 @@ NAME="${app_instance_name}" envsubst \
     < "${script_dir}"/../files/crds_kustomize.yaml \
     > ./kustomization.yaml
 kustomize build . > ./chart-kustomized.yaml
+mv ./chart-kustomized.yaml ./chart.yaml
+
+# Apply usage based billing agent modifications
+NAME="${app_instance_name}" envsubst \
+    < "${script_dir}"/../files/billing-agent-kustomize.yaml \
+    > ./kustomization.yaml
+kustomize build . > ./chart-kustomized.yaml
 
 mv ./chart-kustomized.yaml "${script_dir}"/../"${chart_file_name}"
 

@@ -70,6 +70,10 @@ You need to run this command once.
 
 The Application resource is defined by the [Kubernetes SIG-apps](https://github.com/kubernetes/community/tree/master/sig-apps) community. The source code can be found on [github.com/kubernetes-sigs/application](https://github.com/kubernetes-sigs/application).
 
+### Download and apply the license key
+
+As described in the "DEPLOY VIA COMMAND LINE" section of the Marketplace listing, you need to download the license key for k8ssandra-marketplace. You may have already done this, and if so, you can skip this section. Other wise, visit the [k8ssandra-marketplace configuration UI](https://console.cloud.google.com/marketplace/details/datastax-public/k8ssandra-marketplace) and click on "DEPLOY VIA COMMAND LINE". Then follow the instructions.
+
 ### Install the Application
 
 #### Navigate to the k8ssandra-gcp-mp directory
@@ -126,6 +130,7 @@ export IMAGE_REAPER_OPERATOR="reaper-operator"
 export IMAGE_STARGATE="stargate"
 export IMAGE_STARGATE_WAIT_FOR_CASSANDRA="stargate-wait-for-cassandra"
 export IMAGE_ADMISSION_CONTROLLER="admission-controller"
+export IMAGE_UBBAGENT="ubbagent"
 ```
 
 #### Create a suitable storage class
@@ -153,6 +158,15 @@ If you use a namespace other than the `default`, run the command below to create
 
 ```bash
 kubectl create namespace "${NAMESPACE}"
+```
+
+#### Extract and export the reporting secret name
+
+In a previous step, you downloaded and applied the license key to your cluster. In this step, you'll extract the name of the kubernetes secret that contains that key and make it available for use in the helm chart templates.
+
+```bash
+REPORTING_SECRET="$(kubectl get secret | grep \"^${APP_INSTANCE_NAME}-license\" | awk -F' ' '{print $1}')"
+export REPORTING_SECRET
 ```
 
 #### Create service accounts and RBAC resources for each of the k8ssandra components
@@ -614,6 +628,7 @@ helm template "${APP_INSTANCE_NAME}" chart/k8ssandra-marketplace \
     --set k8ssandra.kube-prometheus-stack.grafana.sidecar.image.repository="${REGISTRY}/${REPOSITORY}/${IMAGE_GRAFANA_SIDECAR}" \
     --set k8ssandra.kube-prometheus-stack.grafana.sidecar.image.tag="${TAG}" \
     --set admiss-ctrl-image-repository="${REGISTRY}/${IMAGE_ADMISSION_CONTROLLER}:${TAG}" \
+    --set ubbagent-image-repository="${REGISTRY}/${IMAGE_UBBAGENT}:${TAG}" \
     --set k8ssandra.cassandra.cassandraLibDirVolume.storageClass="${DEFAULT_STORAGE_CLASS}" \
     --set k8ssandra.cassandra.cassandraLibDirVolume.size="1Gi" \
     --set k8ssandra.cassandra.allowMultipleNodesPerWorker="true" \
