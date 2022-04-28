@@ -131,7 +131,7 @@ export IMAGE_STARGATE="stargate"
 export IMAGE_STARGATE_WAIT_FOR_CASSANDRA="stargate-wait-for-cassandra"
 export IMAGE_ADMISSION_CONTROLLER="admission-controller"
 export IMAGE_UBBAGENT="ubbagent"
-export UBBAGENT_IMAGE="${IMAGE_UBBAGENT}"
+export UBBAGENT_IMAGE="${REGISTRY}/${REPOSITORY}/ubbagent:${TAG}"
 ```
 
 #### Create a suitable storage class
@@ -628,8 +628,8 @@ helm template "${APP_INSTANCE_NAME}" chart/k8ssandra-marketplace \
     --set k8ssandra.kube-prometheus-stack.grafana.image.tag="${TAG}" \
     --set k8ssandra.kube-prometheus-stack.grafana.sidecar.image.repository="${REGISTRY}/${REPOSITORY}/${IMAGE_GRAFANA_SIDECAR}" \
     --set k8ssandra.kube-prometheus-stack.grafana.sidecar.image.tag="${TAG}" \
-    --set admiss-ctrl-image-repository="${REGISTRY}/${IMAGE_ADMISSION_CONTROLLER}:${TAG}" \
-    --set ubbagent-image-repository="${REGISTRY}/${IMAGE_UBBAGENT}:${TAG}" \
+    --set admiss-ctrl-image-repository="${REGISTRY}/${REPOSITORY}/${IMAGE_ADMISSION_CONTROLLER}:${TAG}" \
+    --set ubbagent-image-repository="${REGISTRY}/${REPOSITORY}/${IMAGE_UBBAGENT}:${TAG}" \
     --set k8ssandra.cassandra.cassandraLibDirVolume.storageClass="${DEFAULT_STORAGE_CLASS}" \
     --set k8ssandra.cassandra.cassandraLibDirVolume.size="1Gi" \
     --set k8ssandra.cassandra.allowMultipleNodesPerWorker="true" \
