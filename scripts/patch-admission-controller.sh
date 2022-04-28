@@ -73,7 +73,7 @@ kubectl patch --namespace="$NAMESPACE" secret ${app_instance_name}-admiss-ctrl-d
 ]
 EOF
 
-kubectl get --namespace="$NAMESPACE" validatingwebhookconfiguration ${app_instance_name}-admiss-ctrl-datastax -o yaml > /app/vwc.yaml
+kubectl get --namespace="$NAMESPACE" validatingwebhookconfiguration ${app_instance_name}-admiss-ctrl-datastax -o yaml > ./vwc.yaml
 sed -r -i "s|(^ *?caBundle:).*$|\1 $(cat ./tlsb64e.crt)|" ./vwc.yaml
 kubectl apply --namespace="$NAMESPACE" -f ./vwc.yaml
 
