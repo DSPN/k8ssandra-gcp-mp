@@ -689,6 +689,12 @@ kubectl apply -f "${APP_INSTANCE_NAME}_manifest.yaml" \
     --selector excluded-resource=no,is-crd=no
 ```
 
+As the last step, you need to run a prepared script to patch the admission controller resource:
+
+```bash
+./scripts/patch-admission-controller.sh "${APP_INSTANCE_NAME}"
+```
+
 #### Wait for the Application components to become available
 
 It will take about 10 or 15 minutes for all the components of k8ssandra to become fully available and ready to use. You can follow the status of the install process with the following command:
@@ -700,20 +706,19 @@ watch kubectl get pods --namespace "$NAMESPACE"
 OUTPUT:
 
 ```
-NAME                                                   READY   STATUS      RESTARTS   AGE
-k8ssandra-mp-cass-operator-db4b9b67f-pfkd2             1/1     Running     0          27m
-k8ssandra-mp-dc1-default-sts-0                         2/2     Running     0          26m
-k8ssandra-mp-dc1-default-sts-1                         2/2     Running     0          26m
-k8ssandra-mp-dc1-default-sts-2                         2/2     Running     0          26m
-k8ssandra-mp-dc1-default-sts-3                         2/2     Running     0          26m
-k8ssandra-mp-dc1-stargate-5d758d7499-4n8fz             1/1     Running     0          27m
-k8ssandra-mp-grafana-6c9f769d6-t7khk                   2/2     Running     0          27m
-k8ssandra-mp-kube-promethe-admission-create-xpg5b      0/1     Completed   0          27m
-k8ssandra-mp-kube-promethe-admission-patch-brc7d       0/1     Completed   2          27m
-k8ssandra-mp-kube-promethe-operator-7b4b746869-fhtwk   1/1     Running     0          27m
-k8ssandra-mp-reaper-7d8c47fcd4-l4rbr                   1/1     Running     0          20m
-k8ssandra-mp-reaper-operator-5c6589c7c9-np2c6          1/1     Running     0          27m
-prometheus-k8ssandra-mp-kube-promethe-prometheus-0     2/2     Running     1          26m
+NAME                                                          READY   STATUS      RESTARTS   AGE
+k8ssandra-marketplace-admiss-ctrl-datastax-7f6d8766fd-8spz6   1/1     Running     0          10m
+k8ssandra-marketplace-cass-operator-7499bb54b-flp5m           1/1     Running     0          10m
+k8ssandra-marketplace-dc1-default-sts-0                       3/3     Running     0          10m
+k8ssandra-marketplace-dc1-default-sts-1                       3/3     Running     0          10m
+k8ssandra-marketplace-dc1-default-sts-2                       3/3     Running     0          10m
+k8ssandra-marketplace-dc1-stargate-5f95cf9b6c-kdqjb           1/1     Running     0          10m
+k8ssandra-marketplace-grafana-5747d586d9-mmldw                2/2     Running     0          10m
+k8ssandra-marketplace-prom-admission-create-6bmgr             0/1     Completed   0          10m
+k8ssandra-marketplace-prom-admission-patch-qw5lh              0/1     Completed   0          10m
+k8ssandra-marketplace-prom-operator-86f77964c9-wnvnk          1/1     Running     0          10m
+k8ssandra-marketplace-reaper-operator-9b574d757-v2vnx         1/1     Running     0          10m
+prometheus-k8ssandra-marketplace-prom-prometheus-0            2/2     Running     1          10m
 ```
 
 When you see the stargate pod show 1/1 READY the application has been fully provisioned and is ready for use.
@@ -778,13 +783,13 @@ For more operations please see the official k8ssandra getting started docs:
 
 # Uninstall the Application
 
-## Using the Google Cloud Platform Console
+## If you installed via the Google Cloud Platform Console
 
-1. In the GCP Console, open [Kubernetes Applications].
-2. From the list of applications, click **k8ssandra-mp**.
+1. In the GCP Console, open [Kubernetes Applications](https://console.cloud.google.com/kubernetes/application).
+2. From the list of applications, click **k8ssandra-marketplace**.
 3. On the Application Details page, click **Delete**.
 
-## Using the command line
+## If you installed using the command line
 
 ### Prepare the environment
 
