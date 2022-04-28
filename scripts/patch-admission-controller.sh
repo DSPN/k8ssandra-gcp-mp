@@ -27,6 +27,8 @@ if [ -z "${app_instance_name}" ]; then
     exit 1
 fi
 
+sleep 5
+
 script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 cd "${work_dir}"
