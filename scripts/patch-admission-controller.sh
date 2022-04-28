@@ -72,22 +72,6 @@ kubectl patch --namespace="$NAMESPACE" secret ${app_instance_name}-admiss-ctrl-d
   }
 ]
 EOF
-kubectl patch --namespace="$NAMESPACE" secret ${app_instance_name}-admiss-ctrl-datastax --type=json --patch-file=/dev/stdin <<-EOF
-[
-  {
-    "op": "remove",
-    "path": "/metadata/ownerReferences/1"
-  }
-]
-EOF
-kubectl patch --namespace="$NAMESPACE" service ${app_instance_name}-admiss-ctrl-datastax --type=json --patch-file=/dev/stdin <<-EOF
-[
-  {
-    "op": "remove",
-    "path": "/metadata/ownerReferences/1"
-  }
-]
-EOF
 
 kubectl get --namespace="$NAMESPACE" validatingwebhookconfiguration ${app_instance_name}-admiss-ctrl-datastax -o yaml > /app/vwc.yaml
 sed -r -i "s|(^ *?caBundle:).*$|\1 $(cat ./tlsb64e.crt)|" ./vwc.yaml
