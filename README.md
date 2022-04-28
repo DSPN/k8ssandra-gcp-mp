@@ -4,10 +4,10 @@ Built on the rock-solid Apache Cassandra® NoSQL database, K8ssandra brings toge
 # Installation
 
 ## Quick install with Google Cloud Marketplace
-Get up and running with a few clicks! Install the k8ssandra marketplace app to a Google Kubernetes Engine cluster by using Google Cloud Marketplace. Follow the [[on-screen-instructions]](https://google.com)
+Get up and running with a few clicks! Install the k8ssandra marketplace app to a Google Kubernetes Engine cluster by using Google Cloud Marketplace. Follow the [on-screen-instructions](https://console.cloud.google.com/marketplace/details/datastax-public/k8ssandra-marketplace)
 
 ## Command-line instructions
-You can use [Google Cloud Shell] or a local workstation to follow the steps below.
+You can use [Google Cloud Shell](https://console.cloud.google.com/home/dashboard?cloudshell=true&_ga=2.56087010.819465746.1651092702-2069899356.1630444315) or a local workstation to follow the steps below.
 
 ### Prerequisites
 
@@ -70,6 +70,10 @@ You need to run this command once.
 
 The Application resource is defined by the [Kubernetes SIG-apps](https://github.com/kubernetes/community/tree/master/sig-apps) community. The source code can be found on [github.com/kubernetes-sigs/application](https://github.com/kubernetes-sigs/application).
 
+### Download and apply the license key
+
+As described in the "DEPLOY VIA COMMAND LINE" section of the Marketplace listing, you need to download the license key for k8ssandra-marketplace. You may have already done this, and if so, you can skip this section. Other wise, visit the [k8ssandra-marketplace configuration UI](https://console.cloud.google.com/marketplace/kubernetes/config/datastax-public/k8ssandra-marketplace?version=1.3) and click on "DEPLOY VIA COMMAND LINE". Then follow the instructions on the screen for step 1 and 2.
+
 ### Install the Application
 
 #### Navigate to the k8ssandra-gcp-mp directory
@@ -82,7 +86,7 @@ cd k8ssandra-gcp-mp
 
 ```bash
 helm repo add k8ssandra https://helm.k8ssandra.io/stable
-helm dependency build chart/k8ssandra-mp
+helm dependency build chart/k8ssandra-marketplace
 ```
 
 #### Configure the app with environment variables
@@ -90,7 +94,7 @@ helm dependency build chart/k8ssandra-mp
 Choose an instance name, namespace, and default storage class for the app. In most cases you can use the `default` namespace.
 
 ```bash
-export APP_INSTANCE_NAME=k8ssandra-mp
+export APP_INSTANCE_NAME=k8ssandra-marketplace
 export NAMESPACE=default
 export DEFAULT_STORAGE_CLASS=k8ssandra-storage
 export DC_SIZE=3
@@ -108,7 +112,6 @@ Configure the container images:
 
 ```bash
 export IMAGE_CASS_OPERATOR="cass-operator"
-export IMAGE_CASSANDRA="cassandra"
 export IMAGE_CASSANDRA_CONFIG_BUILDER="cassandra-config-builder"
 export IMAGE_CASSANDRA_JMX_CREDENTIALS="cassandra-jmx-credentials"
 export IMAGE_CASSANDRA_SYSTEM_LOGGER="cassandra-system-logger"
@@ -126,6 +129,9 @@ export IMAGE_REAPER="reaper"
 export IMAGE_REAPER_OPERATOR="reaper-operator"
 export IMAGE_STARGATE="stargate"
 export IMAGE_STARGATE_WAIT_FOR_CASSANDRA="stargate-wait-for-cassandra"
+export IMAGE_ADMISSION_CONTROLLER="admission-controller"
+export IMAGE_UBBAGENT="ubbagent"
+export UBBAGENT_IMAGE="${REGISTRY}/${REPOSITORY}/ubbagent:${TAG}"
 ```
 
 #### Create a suitable storage class
@@ -155,15 +161,24 @@ If you use a namespace other than the `default`, run the command below to create
 kubectl create namespace "${NAMESPACE}"
 ```
 
+#### Extract and export the reporting secret name
+
+In a previous step, you downloaded and applied the license key to your cluster. In this step, you'll extract the name of the kubernetes secret that contains that key and make it available for use in the helm chart templates.
+
+```bash
+REPORTING_SECRET="$(kubectl --namespace="${NAMESPACE}" get secret | grep "^${APP_INSTANCE_NAME}-license" | awk -F' ' '{print $1}')"
+export REPORTING_SECRET
+```
+
 #### Create service accounts and RBAC resources for each of the k8ssandra components
 
 ##### grafana
 
 ```bash
 #service account:
-kubectl create serviceaccount "${APP_INSTANCE_NAME}-grafanaserviceaccount" \
+kubectl create serviceaccount "${APP_INSTANCE_NAME}-grafana-sa" \
     --namespace="${NAMESPACE}"
-kubectl label serviceaccounts "${APP_INSTANCE_NAME}-grafanaserviceaccount" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
+kubectl label serviceaccounts "${APP_INSTANCE_NAME}-grafana-sa" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
     --namespace="${NAMESPACE}"
 
 #role:
@@ -173,7 +188,7 @@ kind: Role
 metadata:
   labels:
     app.kubernetes.io/name: ${NAMESPACE}
-  name: ${APP_INSTANCE_NAME}:grafanaServiceAccount
+  name: ${APP_INSTANCE_NAME}:grafana-sa
   namespace: ${NAMESPACE}
 rules:
 - apiGroups:
@@ -191,11 +206,11 @@ rules:
 EOF
 
 #rolebinding:
-kubectl create rolebinding "${APP_INSTANCE_NAME}:grafanaServiceAccount" \
+kubectl create rolebinding "${APP_INSTANCE_NAME}:grafana-sa" \
     --namespace="${NAMESPACE}" \
-    --role="${APP_INSTANCE_NAME}:grafanaServiceAccount" \
-    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-grafanaserviceaccount"
-kubectl label rolebindings "${APP_INSTANCE_NAME}:grafanaServiceAccount" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
+    --role="${APP_INSTANCE_NAME}:grafana-sa" \
+    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-grafana-sa"
+kubectl label rolebindings "${APP_INSTANCE_NAME}:grafana-sa" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
     --namespace="${NAMESPACE}"
 ```
 
@@ -203,9 +218,9 @@ kubectl label rolebindings "${APP_INSTANCE_NAME}:grafanaServiceAccount" app.kube
 
 ```bash
 #service account:
-kubectl create serviceaccount "${APP_INSTANCE_NAME}-cass-operatorserviceaccount" \
+kubectl create serviceaccount "${APP_INSTANCE_NAME}-cass-operator-sa" \
     --namespace="${NAMESPACE}"
-kubectl label serviceaccounts "${APP_INSTANCE_NAME}-cass-operatorserviceaccount" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
+kubectl label serviceaccounts "${APP_INSTANCE_NAME}-cass-operator-sa" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
     --namespace="${NAMESPACE}"
 
 #role:
@@ -215,7 +230,7 @@ kind: Role
 metadata:
   labels:
     app.kubernetes.io/name: ${APP_INSTANCE_NAME}
-  name: "${APP_INSTANCE_NAME}:cass-operatorServiceAccount"
+  name: "${APP_INSTANCE_NAME}:cass-operator-sa"
   namespace: "${NAMESPACE}"
 rules:
 - apiGroups:
@@ -285,11 +300,11 @@ rules:
 EOF
 
 # rolebinding:
-kubectl create rolebinding "${APP_INSTANCE_NAME}:cass-operatorServiceAccount" \
+kubectl create rolebinding "${APP_INSTANCE_NAME}:cass-operator-sa" \
     --namespace="${NAMESPACE}" \
-    --role="${APP_INSTANCE_NAME}:cass-operatorServiceAccount" \
-    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-cass-operatorserviceaccount"
-kubectl label rolebindings "${APP_INSTANCE_NAME}:cass-operatorServiceAccount" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
+    --role="${APP_INSTANCE_NAME}:cass-operator-sa" \
+    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-cass-operator-sa"
+kubectl label rolebindings "${APP_INSTANCE_NAME}:cass-operator-sa" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
     --namespace="${NAMESPACE}"
 
 # clusterrole:
@@ -299,7 +314,7 @@ kind: ClusterRole
 metadata:
   labels:
     app.kubernetes.io/name: ${APP_INSTANCE_NAME}
-  name: "${APP_INSTANCE_NAME}:cass-operatorServiceAccount"
+  name: "${APP_INSTANCE_NAME}:cass-operator-sa"
 rules:
 - apiGroups:
   - ""
@@ -313,11 +328,11 @@ rules:
 EOF
 
 # clusterrolebinding:
-kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:cass-operatorServiceAccount" \
+kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:cass-operator-sa" \
     --namespace="${NAMESPACE}" \
-    --clusterrole="${APP_INSTANCE_NAME}:cass-operatorServiceAccount" \
-    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-cass-operatorserviceaccount"
-kubectl label clusterrolebindings "${APP_INSTANCE_NAME}:cass-operatorServiceAccount" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
+    --clusterrole="${APP_INSTANCE_NAME}:cass-operator-sa" \
+    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-cass-operator-sa"
+kubectl label clusterrolebindings "${APP_INSTANCE_NAME}:cass-operator-sa" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
     --namespace="${NAMESPACE}"
 ```
 
@@ -325,9 +340,9 @@ kubectl label clusterrolebindings "${APP_INSTANCE_NAME}:cass-operatorServiceAcco
 
 ```bash
 # service account:
-kubectl create serviceaccount "${APP_INSTANCE_NAME}-kube-promethe-admissionserviceaccount" \
+kubectl create serviceaccount "${APP_INSTANCE_NAME}-webhook-admiss-sa" \
     --namespace="${NAMESPACE}"
-kubectl label serviceaccounts "${APP_INSTANCE_NAME}-kube-promethe-admissionserviceaccount" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
+kubectl label serviceaccounts "${APP_INSTANCE_NAME}-webhook-admiss-sa" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
     --namespace="${NAMESPACE}"
 
 # role:
@@ -337,7 +352,7 @@ kind: Role
 metadata:
   labels:
     app.kubernetes.io/name: ${APP_INSTANCE_NAME}
-  name: ${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount
+  name: ${APP_INSTANCE_NAME}:webhook-admiss-sa
   namespace: ${NAMESPACE}
 rules:
 - apiGroups:
@@ -350,11 +365,11 @@ rules:
 EOF
 
 # rolebinding:
-kubectl create rolebinding "${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount" \
+kubectl create rolebinding "${APP_INSTANCE_NAME}:webhook-admiss-sa" \
     --namespace="${NAMESPACE}" \
-    --role="${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount" \
-    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-kube-promethe-admissionserviceaccount"
-kubectl label rolebindings "${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
+    --role="${APP_INSTANCE_NAME}:webhook-admiss-sa" \
+    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-webhook-admiss-sa"
+kubectl label rolebindings "${APP_INSTANCE_NAME}:webhook-admiss-sa" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
     --namespace="${NAMESPACE}"
 
 # clusterrole:
@@ -365,7 +380,7 @@ metadata:
   labels:
     app.kubernetes.io/name: ${APP_INSTANCE_NAME}
     app.kubernetes.io/namespace: "${NAMESPACE}"
-  name: ${NAMESPACE}:${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount
+  name: ${NAMESPACE}:${APP_INSTANCE_NAME}:webhook-admiss-sa
 rules:
 - apiGroups:
   - admissionregistration.k8s.io
@@ -384,11 +399,11 @@ rules:
 EOF
 
 # clusterrolebinding:
-kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount" \
+kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:webhook-admiss-sa" \
     --namespace="${NAMESPACE}" \
-    --clusterrole="${NAMESPACE}:${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount" \
-    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-kube-promethe-admissionserviceaccount"
-kubectl label clusterrolebindings "${APP_INSTANCE_NAME}:kube-promethe-admissionServiceAccount" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
+    --clusterrole="${NAMESPACE}:${APP_INSTANCE_NAME}:webhook-admiss-sa" \
+    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-webhook-admiss-sa"
+kubectl label clusterrolebindings "${APP_INSTANCE_NAME}:webhook-admiss-sa" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
     --namespace="${NAMESPACE}"
 ```
 
@@ -396,9 +411,9 @@ kubectl label clusterrolebindings "${APP_INSTANCE_NAME}:kube-promethe-admissionS
 
 ```bash
 # service account:
-kubectl create serviceaccount "${APP_INSTANCE_NAME}-kube-promethe-operatorserviceaccount" \
+kubectl create serviceaccount "${APP_INSTANCE_NAME}-prom-operator-sa" \
     --namespace="${NAMESPACE}"
-kubectl label serviceaccount "${APP_INSTANCE_NAME}-kube-promethe-operatorserviceaccount" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
+kubectl label serviceaccount "${APP_INSTANCE_NAME}-prom-operator-sa" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
     --namespace="${NAMESPACE}"
 
 # clusterrole:
@@ -409,7 +424,7 @@ metadata:
   labels:
     app.kubernetes.io/name: ${APP_INSTANCE_NAME}
     app.kubernetes.io/namespace: "${NAMESPACE}"
-  name: ${NAMESPACE}:${APP_INSTANCE_NAME}:kube-promethe-operatorServiceAccount
+  name: ${NAMESPACE}:${APP_INSTANCE_NAME}:prom-operator-sa
 rules:
 - apiGroups:
   - monitoring.coreos.com
@@ -490,11 +505,11 @@ rules:
 EOF
 
 # clusterrolebinding:
-kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:kube-promethe-operatorServiceAccount" \
+kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:prom-operator-sa" \
     --namespace="${NAMESPACE}" \
-    --clusterrole="${NAMESPACE}:${APP_INSTANCE_NAME}:kube-promethe-operatorServiceAccount" \
-    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-kube-promethe-operatorserviceaccount"
-kubectl label clusterrolebindings "${APP_INSTANCE_NAME}:kube-promethe-operatorServiceAccount" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
+    --clusterrole="${NAMESPACE}:${APP_INSTANCE_NAME}:prom-operator-sa" \
+    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-prom-operator-sa"
+kubectl label clusterrolebindings "${APP_INSTANCE_NAME}:prom-operator-sa" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
     --namespace="${NAMESPACE}"
 ```
 
@@ -502,9 +517,9 @@ kubectl label clusterrolebindings "${APP_INSTANCE_NAME}:kube-promethe-operatorSe
 
 ```bash
 # service account:
-kubectl create serviceaccount "${APP_INSTANCE_NAME}-kube-promethe-prometheusserviceaccount" \
+kubectl create serviceaccount "${APP_INSTANCE_NAME}-prometheus-sa" \
     --namespace="${NAMESPACE}"
-kubectl label serviceaccounts "${APP_INSTANCE_NAME}-kube-promethe-prometheusserviceaccount" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
+kubectl label serviceaccounts "${APP_INSTANCE_NAME}-prometheus-sa" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
     --namespace="${NAMESPACE}"
 
 # clusterrole:
@@ -515,7 +530,7 @@ metadata:
   labels:
     app.kubernetes.io/name: "${APP_INSTANCE_NAME}"
     app.kubernetes.io/namespace: "${NAMESPACE}" 
-  name: ${NAMESPACE}:${APP_INSTANCE_NAME}:kube-promethe-prometheusServiceAccount
+  name: ${NAMESPACE}:${APP_INSTANCE_NAME}:prometheus-sa
 rules:
 - apiGroups:
   - ""
@@ -546,11 +561,11 @@ rules:
 EOF
 
 # clusterrolebinding:
-kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:kube-promethe-prometheusServiceAccount" \
+kubectl create clusterrolebinding "${APP_INSTANCE_NAME}:prometheus-sa" \
     --namespace="${NAMESPACE}" \
-    --clusterrole="${NAMESPACE}:${APP_INSTANCE_NAME}:kube-promethe-prometheusServiceAccount" \
-    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-kube-promethe-prometheusserviceaccount"
-kubectl label clusterrolebindings "${APP_INSTANCE_NAME}:kube-promethe-prometheusServiceAccount" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
+    --clusterrole="${NAMESPACE}:${APP_INSTANCE_NAME}:prometheus-sa" \
+    --serviceaccount="${NAMESPACE}:${APP_INSTANCE_NAME}-prometheus-sa"
+kubectl label clusterrolebindings "${APP_INSTANCE_NAME}:prometheus-sa" app.kubernetes.io/name="${APP_INSTANCE_NAME}" \
     --namespace="${NAMESPACE}"
 ```
 
@@ -559,11 +574,11 @@ kubectl label clusterrolebindings "${APP_INSTANCE_NAME}:kube-promethe-prometheus
 Use `helm template` to expand the template. We recommend that you save the expanded manifest file for future updates to the application.
 
 ```bash
-helm template "${APP_INSTANCE_NAME}" chart/k8ssandra-mp \
+helm template "${APP_INSTANCE_NAME}" chart/k8ssandra-marketplace \
     --namespace "${NAMESPACE}" \
     --include-crds \
     --set k8ssandra.cassandra.image.registry="${REGISTRY}" \
-    --set k8ssandra.cassandra.image.repository="${REPOSITORY}/${IMAGE_CASSANDRA}" \
+    --set k8ssandra.cassandra.image.repository="${REPOSITORY}" \
     --set k8ssandra.cassandra.image.tag="${TAG}" \
     --set k8ssandra.cassandra.configBuilder.image.registry="${REGISTRY}" \
     --set k8ssandra.cassandra.configBuilder.image.repository="${REPOSITORY}/${IMAGE_CASSANDRA_CONFIG_BUILDER}" \
@@ -613,6 +628,8 @@ helm template "${APP_INSTANCE_NAME}" chart/k8ssandra-mp \
     --set k8ssandra.kube-prometheus-stack.grafana.image.tag="${TAG}" \
     --set k8ssandra.kube-prometheus-stack.grafana.sidecar.image.repository="${REGISTRY}/${REPOSITORY}/${IMAGE_GRAFANA_SIDECAR}" \
     --set k8ssandra.kube-prometheus-stack.grafana.sidecar.image.tag="${TAG}" \
+    --set admiss-ctrl-image-repository="${REGISTRY}/${REPOSITORY}/${IMAGE_ADMISSION_CONTROLLER}:${TAG}" \
+    --set ubbagent-image-repository="${REGISTRY}/${REPOSITORY}/${IMAGE_UBBAGENT}:${TAG}" \
     --set k8ssandra.cassandra.cassandraLibDirVolume.storageClass="${DEFAULT_STORAGE_CLASS}" \
     --set k8ssandra.cassandra.cassandraLibDirVolume.size="1Gi" \
     --set k8ssandra.cassandra.allowMultipleNodesPerWorker="true" \
@@ -774,7 +791,7 @@ For more operations please see the official k8ssandra getting started docs:
 Set your installation name and Kubernetes namespace:
 
 ```bash
-export APP_INSTANCE_NAME=k8ssandra-mp
+export APP_INSTANCE_NAME=k8ssandra-marketplace
 export NAMESPACE=default
 ```
 
