@@ -72,7 +72,7 @@ The Application resource is defined by the [Kubernetes SIG-apps](https://github.
 
 ### Download and apply the license key
 
-As described in the "DEPLOY VIA COMMAND LINE" section of the Marketplace listing, you need to download the license key for k8ssandra-marketplace. You may have already done this, and if so, you can skip this section. Other wise, visit the [k8ssandra-marketplace configuration UI](https://console.cloud.google.com/marketplace/details/datastax-public/k8ssandra-marketplace) and click on "DEPLOY VIA COMMAND LINE". Then follow the instructions.
+As described in the "DEPLOY VIA COMMAND LINE" section of the Marketplace listing, you need to download the license key for k8ssandra-marketplace. You may have already done this, and if so, you can skip this section. Other wise, visit the [k8ssandra-marketplace configuration UI](https://console.cloud.google.com/marketplace/kubernetes/config/datastax-public/k8ssandra-marketplace?version=1.3) and click on "DEPLOY VIA COMMAND LINE". Then follow the instructions.
 
 ### Install the Application
 
