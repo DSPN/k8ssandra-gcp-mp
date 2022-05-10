@@ -3,7 +3,7 @@ Built on the rock-solid Apache Cassandra® NoSQL database, K8ssandra brings toge
 
 # Architecture
 
-![architecture diagram](https://github.com/DSPN/k8ssandra-gcp-mp/tree/main/img/k8ssandra-gcp-arch.png)
+![architecture diagram](/img/k8ssandra-gcp-arch.png?raw=true)
 
 For an explanation of what all these components are, please see this page: [k8ssandra components](https://docs-v1.k8ssandra.io/components/) 
 
