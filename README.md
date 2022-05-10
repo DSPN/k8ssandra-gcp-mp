@@ -1,6 +1,10 @@
 # Overview
 Built on the rock-solid Apache Cassandra® NoSQL database, K8ssandra brings together a complete operational data platform for Kubernetes including APIs, monitoring, and backups.
 
+# Architecture
+
+![architecture diagram](https://github.com/DSPN/k8ssandra-gcp-mp/tree/v1.3/img/k8ssandra-gcp-arch.png)
+
 # Installation
 
 ## Quick install with Google Cloud Marketplace
