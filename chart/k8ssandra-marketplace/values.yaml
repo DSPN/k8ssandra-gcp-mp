@@ -39,6 +39,10 @@ k8ssandra:
     prometheusOperator:
       serviceAccount:
         create: false
+      admissionWebhooks:
+        patch:
+          image:
+            sha: ""
     prometheus:
       serviceAccount:
         create: false

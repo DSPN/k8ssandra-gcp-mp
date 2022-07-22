@@ -19,24 +19,24 @@ valid_operations = (
 # https://github.com/jet/kube-webhook-certgen/issues/30
 image_map = {
     'stargate-wait-for-cassandra': 'alpine:3.12.2',
-    'cassandra-jmx-credentials': 'busybox:1.33.1',
+    'cassandra-jmx-credentials': 'busybox:1.35.0',
     'cassandra-config-builder': 'datastax/cass-config-builder:1.0.4',
-    'grafana': 'grafana/grafana:7.3.5',
-    helpers.application_name: 'k8ssandra/cass-management-api:4.0.0-v0.1.28',
-    'cass-operator': 'k8ssandra/cass-operator:v1.7.1',
+    'grafana': 'grafana/grafana:7.5.11',
+    helpers.application_name: 'k8ssandra/cass-management-api:4.0.0-v0.1.37',
+    'cass-operator': 'k8ssandra/cass-operator:v1.10.4',
     'cleaner': 'k8ssandra/k8ssandra-tools:latest',
     'client': 'k8ssandra/k8ssandra-tools:latest',
-    'reaper-operator': 'k8ssandra/reaper-operator:v0.3.3',
-    'cassandra-system-logger': 'k8ssandra/system-logger:9c4c3692',
-    'medusa-operator': 'k8ssandra/medusa-operator:v0.3.3',
-    'medusa': 'k8ssandra/medusa:0.11.0',
-    'stargate': 'stargateio/stargate-4_0:v1.0.29',
-    'reaper': 'thelastpickle/cassandra-reaper:2.3.1',
+    'reaper-operator': 'k8ssandra/reaper-operator:v0.3.5',
+    'cassandra-system-logger': 'k8ssandra/system-logger:6c64f9c4',
+    'medusa-operator': 'k8ssandra/medusa-operator:v0.4.0',
+    'medusa': 'k8ssandra/medusa:0.12.2',
+    'stargate': 'stargateio/stargate-4_0:v1.0.52',
+    'reaper': 'thelastpickle/cassandra-reaper:3.1.1',
     'kube-prometheus-stack-admission-patch': 'k8s.gcr.io/ingress-nginx/kube-webhook-certgen:v1.1.1',
-    'grafana-sidecar': 'kiwigrid/k8s-sidecar:1.1.0',
-    'prometheus-config-reloader': 'quay.io/prometheus-operator/prometheus-config-reloader:v0.44.0',
-    'prometheus-operator': 'quay.io/prometheus-operator/prometheus-operator:v0.44.0',
-    'prometheus': 'quay.io/prometheus/prometheus:v2.22.1',
+    'grafana-sidecar': 'quay.io/kiwigrid/k8s-sidecar:1.14.2',
+    'prometheus-config-reloader': 'quay.io/prometheus-operator/prometheus-config-reloader:v0.52.0',
+    'prometheus-operator': 'quay.io/prometheus-operator/prometheus-operator:v0.52.0',
+    'prometheus': 'quay.io/prometheus/prometheus:v2.28.1',
     'admission-controller': 'tawamudu/admission-controller:1',
     'ubbagent': 'tawamudu/ubbagent:1',
 }
@@ -191,7 +191,7 @@ class ImagePublisher:
             else:
                 dev_staging_name = f"{helpers.dev_staging_repo}/{name}"
                 prod_staging_name = f"{helpers.prod_staging_repo}/{name}"
-            print(f"creating tag. Source: '{dev_staging_name}', Dest: '{prod_staging_name}'")
+            print(f"creating tag. Source: '{dev_staging_name}:{version}', Dest: '{prod_staging_name}:{version}'")
             cp = helpers.run(
                 f"""
                 docker tag {dev_staging_name}:{version} {prod_staging_name}:{version}

@@ -4,7 +4,7 @@ x-google-marketplace:
 
   applicationApiVersion: v1beta1
 
-  publishedVersion: "1.3.2-k8ssandra1.3.1b5"
+  publishedVersion: "1.5.1-k8ssandra1.5.1b1"
   publishedVersionMetadata:
     releaseNote: >-
       Initial release.
@@ -273,6 +273,12 @@ properties:
                 verbs: ['*']
               - apiGroups: ['batch']
                 resources: ['*']
+                verbs: ['*']
+              - apiGroups: ['coordination.k8s.io']
+                resources: ['leases']
+                verbs: ['*']
+              - apiGroups: ['control.k8ssandra.io']
+                resources: ['cassandratasks']
                 verbs: ['*']
           - type: ClusterRole
             rulesType: CUSTOM

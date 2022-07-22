@@ -135,8 +135,8 @@ mv /data/manifest-expanded/chart-kustomized.yaml /data/manifest-expanded/chart.y
 rm /data/manifest-expanded/kustomization.yaml
 
 # Remove unneeded version strings in the chart template
-sed -i 's|^  version: 1.3.*$||' /data/manifest-expanded/chart.yaml
-sed -i 's|^ *app.kubernetes.io/version: 1.3.*$||g' /data/manifest-expanded/chart.yaml
+sed -i 's|^  version: 1.5.*$||' /data/manifest-expanded/chart.yaml
+sed -i 's|^ *app.kubernetes.io/version: 1.5.*$||g' /data/manifest-expanded/chart.yaml
 
 /usr/bin/env python3 /app/remove-cass-crd.py
 
@@ -175,9 +175,11 @@ separate_tester_resources.py \
 # Apply the manifest.
 kubectl apply --namespace="$NAMESPACE" \
               --filename="/data/resources.yaml" \
-              --selector is-crd=yes || true
+              --selector is-crd=yes \
+              --server-side || true
 kubectl apply --namespace="$NAMESPACE" \
-              --filename="/app/cassandra-datacenter-crd.yaml"
+              --filename="/app/cassandra-datacenter-crd.yaml" \
+              --server-side
 
 # wait for CRDS to be created.
 # TODO: use something like kubectl wait --for condition=established --timeout=120s instead of hard coding a timeout here.
@@ -186,9 +188,11 @@ sleep 30
 # Apply a second time due to: https://github.com/kubernetes/kubectl/issues/1117
 kubectl apply --namespace="$NAMESPACE" \
               --filename="/data/resources.yaml" \
-              --selector is-crd=yes || true
+              --selector is-crd=yes \
+              --server-side || true
 kubectl apply --namespace="$NAMESPACE" \
-              --filename="/app/cassandra-datacenter-crd.yaml"
+              --filename="/app/cassandra-datacenter-crd.yaml" \
+              --server-side
 
 # Give enough time for the crds to become available.
 sleep 10
