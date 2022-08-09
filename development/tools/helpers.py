@@ -4,7 +4,7 @@ import subprocess
 import yaml
 
 valid_versions = [
-    "1.5.1-k8ssandra1.5.1b1"
+    "4.0.0-k8ssandra1.5.1-cma4.0.0b2"
 ]
 
 application_name = 'k8ssandra-marketplace'

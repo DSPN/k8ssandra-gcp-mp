@@ -3,7 +3,7 @@ name: k8ssandra-marketplace
 description: |
   Wrapper of k8ssandra for Google Marketplace.
 type: application
-version: 1.5.1-k8ssandra1.5.1b1
+version: 4.0.0-k8ssandra1.5.1-cma4.0.0b2
 
 dependencies:
   - name: k8ssandra

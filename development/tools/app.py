@@ -24,7 +24,7 @@ def prod_install(version, namespace="default"):
     cp = helpers.run(
         """
         mpdev install --deployer={deployer} \
-                      --parameters='{{"name": "{app_name}", "namespace": "{namespace}"}}'
+                --parameters='{{"name": "{app_name}", "namespace": "{namespace}", "reportingSecret": "reporting-secret"}}'
         """.format(deployer=f"{helpers.prod_staging_repo}/deployer:{version}",
                    app_name=helpers.application_name,
                    namespace=namespace)

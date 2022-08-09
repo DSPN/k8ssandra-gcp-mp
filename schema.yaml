@@ -4,7 +4,7 @@ x-google-marketplace:
 
   applicationApiVersion: v1beta1
 
-  publishedVersion: "1.5.1-k8ssandra1.5.1b1"
+  publishedVersion: "4.0.0-k8ssandra1.5.1-cma4.0.0b2"
   publishedVersionMetadata:
     releaseNote: >-
       Initial release.
